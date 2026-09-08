@@ -1,7 +1,7 @@
 {
-  "app": "Watch Archive",
+  "app": "Viewlog",
   "version": 3,
-  "publishedAt": "2026-09-08T05:26:23.636Z",
+  "publishedAt": "2026-09-08T07:42:15.402Z",
   "entries": [
     {
       "id": "6e29a09f-0d2e-4912-b191-6ca1deb12839",
@@ -12,7 +12,7 @@
       "season": 1,
       "year": 2026,
       "rating": 9.7,
-      "status": "Completed",
+      "status": "Watching",
       "network": "Apple TV",
       "genres": [
         "Comedy",
@@ -25,11 +25,25 @@
       "watchedDate": "",
       "imdb": "tt33332385",
       "tvdb": "454109",
-      "comments": "",
+      "externalRatings": {
+        "imdb": 8.1,
+        "rt": 98,
+        "mc": 78,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:06.205Z",
+      "ratingsImdbId": "tt33332385",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/widows_bay",
+        "mc": "https://www.metacritic.com/tv/widows-bay",
+        "mal": ""
+      },
+      "synopsis": "",
+      "comments": "INCREDIBLE SURPRISE! The promos for this show alone was mysterious enough know this was going to be special. I did not expect how special of a show it ends up becoming. Some very standout performances from lesser known character actors. I would easily recommend this to anyone. Cannot wait for S2. It will easily end on my top 5 this year.",
       "tvmazeUrl": "https://www.tvmaze.com/shows/79390/widows-bay",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/623/1559488.jpg",
       "createdAt": "2026-09-08T04:46:28.596Z",
-      "updatedAt": "2026-09-08T05:20:23.219Z"
+      "updatedAt": "2026-09-08T06:56:54.745Z"
     },
     {
       "id": "3658a62b-f1f4-4d1c-982e-0d7b26e21f53",
@@ -53,6 +67,20 @@
       "watchedDate": "",
       "imdb": "tt16026746",
       "tvdb": "412432",
+      "externalRatings": {
+        "imdb": 8.7,
+        "rt": 98,
+        "mc": 84,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:06.211Z",
+      "ratingsImdbId": "tt16026746",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/x_men_97",
+        "mc": "https://www.metacritic.com/tv/x-men-97",
+        "mal": ""
+      },
+      "synopsis": "",
       "comments": "",
       "tvmazeUrl": "https://www.tvmaze.com/shows/58951/x-men-97",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/630/1576859.jpg",
@@ -82,6 +110,20 @@
       "watchedDate": "",
       "imdb": "tt14688458",
       "tvdb": "403245",
+      "externalRatings": {
+        "imdb": 8.1,
+        "rt": 92,
+        "mc": 77,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:11.691Z",
+      "ratingsImdbId": "tt14688458",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/silo",
+        "mc": "https://www.metacritic.com/tv/silo",
+        "mal": ""
+      },
+      "synopsis": "",
       "comments": "",
       "tvmazeUrl": "https://www.tvmaze.com/shows/38052/silo",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/631/1577677.jpg",
@@ -110,6 +152,20 @@
       "watchedDate": "",
       "imdb": "tt27444205",
       "tvdb": "454565",
+      "externalRatings": {
+        "imdb": 7.9,
+        "rt": 88,
+        "mc": 70,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:39.224Z",
+      "ratingsImdbId": "tt27444205",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/paradise_2025",
+        "mc": "https://www.metacritic.com/tv/paradise-2025",
+        "mal": ""
+      },
+      "synopsis": "",
       "comments": "This season like the last is purely a hatewatch. I find the main premise compelling enough to keep watching but very little outside from that is good IMO. Shaileen Woodley was the 1 bright spot this season. She had a very small arc at the start of the season and honestly that whole section was incredible. It was very TLOU style bleakness and suspense and almost like a totally different show when you compare it to the rest.",
       "tvmazeUrl": "https://www.tvmaze.com/shows/75030/paradise",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/614/1536865.jpg",
@@ -139,6 +195,20 @@
       "watchedDate": "",
       "imdb": "tt39229633",
       "tvdb": "467209",
+      "externalRatings": {
+        "imdb": 7.1,
+        "rt": null,
+        "mc": null,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:29.079Z",
+      "ratingsImdbId": "tt39229633",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/liar_game",
+        "mc": "https://www.metacritic.com/tv/igra-lzhetsov",
+        "mal": ""
+      },
+      "synopsis": "",
       "comments": "",
       "tvmazeUrl": "https://www.tvmaze.com/shows/90774/liar-game",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/620/1551709.jpg",
@@ -153,7 +223,7 @@
       "title": "Ponies",
       "season": 1,
       "year": 2026,
-      "rating": null,
+      "rating": 7.8,
       "status": "Completed",
       "network": "Peacock",
       "genres": [
@@ -167,11 +237,191 @@
       "watchedDate": "",
       "imdb": "tt33270420",
       "tvdb": "453786",
+      "externalRatings": {
+        "imdb": 7.1,
+        "rt": 94,
+        "mc": 76,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:07.930Z",
+      "ratingsImdbId": "tt33270420",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/ponies",
+        "mc": "https://www.metacritic.com/tv/ponies",
+        "mal": ""
+      },
+      "synopsis": "",
       "comments": "",
       "tvmazeUrl": "https://www.tvmaze.com/shows/79185/ponies",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521711.jpg",
       "createdAt": "2026-09-08T05:24:55.535Z",
-      "updatedAt": "2026-09-08T05:24:58.383Z"
+      "updatedAt": "2026-09-08T06:51:00.197Z"
+    },
+    {
+      "id": "e87c0735-0d8c-44ba-9257-a8da82a689ed",
+      "mediaType": "tv",
+      "tvmazeId": 67765,
+      "tvmazeSeasonId": 150311,
+      "title": "Man on Fire",
+      "season": 1,
+      "year": 2026,
+      "rating": 3.4,
+      "status": "Completed",
+      "network": "Netflix",
+      "genres": [
+        "Drama",
+        "Action",
+        "Thriller"
+      ],
+      "episodeCount": 7,
+      "episodesWatched": 7,
+      "runtime": 47,
+      "startDate": "2026-04-30",
+      "watchedDate": "",
+      "imdb": "tt27331527",
+      "tvdb": "433027",
+      "externalRatings": {
+        "imdb": 6.7,
+        "rt": 59,
+        "mc": 61,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:16.986Z",
+      "ratingsImdbId": "tt27331527",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/man_on_fire",
+        "mc": "https://www.metacritic.com/tv/man-on-fire-2026",
+        "mal": ""
+      },
+      "synopsis": "",
+      "comments": "Yet another high profile show with respectable actors with a horrible script. Yet compelling enough to know how the mystery ends. Sadly the ending was also fucking horrible and infuriating.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/67765/man-on-fire",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/621/1554712.jpg",
+      "createdAt": "2026-09-08T06:52:22.527Z",
+      "updatedAt": "2026-09-08T06:52:22.527Z"
+    },
+    {
+      "id": "e5ddbe91-844f-4433-af76-929bfae15945",
+      "mediaType": "tv",
+      "tvmazeId": 67323,
+      "tvmazeSeasonId": 149476,
+      "title": "Scarpetta",
+      "season": 1,
+      "year": 2026,
+      "rating": 2,
+      "status": "Dropped",
+      "network": "Prime Video",
+      "genres": [
+        "Crime",
+        "Thriller",
+        "Mystery"
+      ],
+      "episodeCount": 8,
+      "episodesWatched": null,
+      "runtime": 52,
+      "startDate": "2026-03-11",
+      "watchedDate": "",
+      "imdb": "tt14786934",
+      "tvdb": "464253",
+      "externalRatings": {
+        "imdb": 6.1,
+        "rt": 58,
+        "mc": 53,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:26.125Z",
+      "ratingsImdbId": "tt14786934",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/scarpetta",
+        "mc": "https://www.metacritic.com/tv/scarpetta",
+        "mal": ""
+      },
+      "synopsis": "",
+      "comments": "I legit had to drop this trash",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/67323/scarpetta",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/615/1539895.jpg",
+      "createdAt": "2026-09-08T06:52:47.936Z",
+      "updatedAt": "2026-09-08T06:53:28.440Z"
+    },
+    {
+      "id": "709b9a68-3b0f-47fb-8ea2-3b5ad6acd242",
+      "mediaType": "movie",
+      "tvmazeId": null,
+      "tvmazeSeasonId": null,
+      "title": "Tuner",
+      "season": null,
+      "year": 2026,
+      "rating": 8.2,
+      "status": "Watching",
+      "network": "",
+      "genres": [],
+      "episodeCount": null,
+      "episodesWatched": null,
+      "runtime": null,
+      "startDate": "",
+      "watchedDate": "",
+      "imdb": "tt33296751",
+      "tvdb": "",
+      "externalRatings": {
+        "imdb": 7.2,
+        "rt": 94,
+        "mc": 75,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:17:00.031Z",
+      "ratingsImdbId": "tt33296751",
+      "ratingsUrls": {
+        "rt": "",
+        "mc": "",
+        "mal": ""
+      },
+      "synopsis": "",
+      "comments": "",
+      "tvmazeUrl": "",
+      "image": "",
+      "createdAt": "2026-09-08T07:16:36.770Z",
+      "updatedAt": "2026-09-08T07:28:20.386Z"
+    },
+    {
+      "id": "e7cb8431-a12a-4e0c-85ba-a2cf9ee975e0",
+      "mediaType": "tv",
+      "tvmazeId": 61739,
+      "tvmazeSeasonId": 191111,
+      "title": "Hijack",
+      "season": 2,
+      "year": 2026,
+      "rating": 6.2,
+      "status": "Watching",
+      "network": "Apple TV",
+      "genres": [
+        "Thriller"
+      ],
+      "episodeCount": 8,
+      "episodesWatched": null,
+      "runtime": 46,
+      "startDate": "2026-01-14",
+      "watchedDate": "",
+      "imdb": "tt19854762",
+      "tvdb": "419254",
+      "externalRatings": {
+        "imdb": 7.3,
+        "rt": 80,
+        "mc": 65,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:36:14.028Z",
+      "ratingsImdbId": "tt19854762",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/hijack",
+        "mc": "https://www.metacritic.com/tv/hijack",
+        "mal": ""
+      },
+      "synopsis": "Told in real time, Hijack is a tense thriller that follows the journey of a hijacked plane as it makes its way to London over a seven-hour flight, as authorities on the ground scramble for answers. Sam Nelson is an accomplished negotiator in the business world who needs to step up and use all his guile to try and save the lives of the passengers — but his high-risk strategy could be his undoing.",
+      "comments": "Season 2 really fell off, I found it a struggle to watch it weekly to the point where I was behind a few weeks and had to catch up. Unlike season 1 the cast of supporting characters were not fleshed out enough nor were their roles interesting. There were a set of characters that didn't even interact unless via phone with the main character (Idris) and it was so weird. I still like the premise of the show, it's total dadcore which can be nice to turn brain off, but this was a huge let down from the surprise hit of season 1. I'll watch S3 hoping it turns it around.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/61739/hijack",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521070.jpg",
+      "createdAt": "2026-09-08T07:35:39.675Z",
+      "updatedAt": "2026-09-08T07:35:39.675Z"
     }
   ]
 }

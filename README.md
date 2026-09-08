@@ -1,4 +1,4 @@
-# Watch Archive — GitHub Pages Edition
+# Viewlog — GitHub Pages Edition
 
 This is a static, year-by-year TV and movie tracker designed for a **public GitHub Pages site**.
 
@@ -138,6 +138,7 @@ The monthly rating trend uses **Watched / finished date** when available. If tha
    - `app.js`
    - `shows.json`
    - `README.md`
+   - `assets/` (contains the Viewlog logo)
 3. Commit them to `main`.
 4. Open **Settings → Pages**.
 5. Under **Build and deployment**, choose **Deploy from a branch**.
@@ -158,3 +159,18 @@ Your local editing copy is browser-specific. You have two easy options:
 ## Data source
 
 TV-show metadata is provided by [TVmaze](https://www.tvmaze.com/) through its public API.
+
+## External ratings (MDBList)
+In editor mode, use **MDBList key** to save your activated key in this browser.
+After saving a title with its IMDb ID, click **Fetch ratings** in its Ratings
+column. **Refresh ratings** is manual; opening the page does not request scores.
+IMDb (yellow) is out of 10, RT (red) is a percentage, and MC (green) is out of 100.
+Unavailable scores display a dash. Hover the scores for the last fetch date.
+TV scores represent the overall series, not an individual season. A fetch updates
+working entries with the same IMDb ID using one request.
+Export and publish shows.json to share saved scores. The API key is stored
+separately and is never exported. Save an empty key to remove it from this browser.
+
+Ratings badges link to their source pages. MDBList source URLs are saved in shows.json; if no URL is available, the badge opens a search. Existing scores remain until you manually refresh. Enter a MDBList key using the editor key settings; old OMDb keys are not reused.
+
+Titles with an Anime genre (case-insensitive) display IMDb and MyAnimeList scores instead of RT and MC. MAL scores are out of 10 and link to MyAnimeList. Manually refresh previously fetched titles to retrieve MAL scores; unavailable scores show a dash.

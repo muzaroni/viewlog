@@ -4,15 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <meta name="description" content="A personal year-by-year TV and movie watch archive." />
-  <title>Watch Archive</title>
+  <meta name="description" content="Viewlog — a personal year-by-year TV and movie archive with ratings, notes and viewing statistics." />
+  <title>Viewlog — TV &amp; Movie Archive</title>
+  <link rel="icon" type="image/svg+xml" href="assets/viewlog-logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@400;500;600;650;700;750;800;850&amp;display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="public-view">
   <main class="app-shell">
     <header class="topbar">
       <div>
-        <h1><span id="yearHeading">2026</span> <span>Watch Archive</span></h1>
+        <h1 class="brand-heading"><span class="brand-logo" role="img" aria-label="Viewlog"><svg xmlns="http://www.w3.org/2000/svg" width="211" height="190" viewBox="0 0 211 190" aria-hidden="true">
+  <path fill="#fff" d="M51 14H73Q78 14 81 20L101 54L84 84Q82 88 79 82L45 24Q41 14 51 14Z"/>
+  <path fill="#f2d137" d="M135 14H157Q166 14 161 23L117 96Q112 106 102 106Q92 106 87 97Q84 92 88 85L126 21Q129 14 135 14Z"/>
+  <text x="105.5" y="162" text-anchor="middle" fill="#fff" font-family="'Reddit Sans', Arial, sans-serif" font-size="47" font-weight="750" letter-spacing="-2">viewlog</text>
+</svg></span></h1>
         <p class="subtitle">TV seasons & movies · ratings, notes and yearly statistics</p>
       </div>
       <div class="header-actions" id="editActions" hidden>
@@ -21,6 +29,7 @@
         <label class="button file-button" for="importFile">Import JSON</label>
         <input id="importFile" type="file" accept="application/json,.json" hidden />
         <button id="resetWorkingBtn" class="button" type="button">Reset from published</button>
+        <button id="mdblistSettingsBtn" class="button" type="button">MDBList key</button>
         <button id="publicModeBtn" class="button" type="button">Exit editor</button>
       </div>
     </header>
@@ -35,7 +44,12 @@
       <span id="publishedStatus" class="sync-status">Loading published catalog…</span>
     </section>
 
-    <section id="analyticsSection" class="analytics-section" aria-label="Year analytics">
+    <nav id="yearSubtabs" class="year-subtabs" aria-label="Year views">
+      <button id="libraryTab" class="view-tab active" type="button" aria-pressed="true" aria-controls="librarySection">Library</button>
+      <button id="dashboardTab" class="view-tab" type="button" aria-pressed="false" aria-controls="analyticsSection">Dashboard</button>
+    </nav>
+
+    <section id="analyticsSection" class="analytics-section" aria-label="Year analytics" hidden>
       <div class="analytics-heading">
         <div>
           <p class="eyebrow">Year in review</p>
@@ -49,20 +63,20 @@
         <article class="stat-card"><span>Hours watched</span><strong id="statHours">0</strong><small id="statHoursDetail">Known runtime</small></article>
         <article class="stat-card"><span>Average rating</span><strong id="statRating">—</strong><small id="statRatingDetail">No rated titles</small></article>
         <article class="stat-card"><span>Genres explored</span><strong id="statGenres">0</strong><small id="statGenreDetail">Unique genres</small></article>
-        <article class="stat-card"><span>Top network / service</span><strong id="statNetwork">—</strong><small id="statNetworkDetail">No data yet</small></article>
+        <article class="stat-card"><span>Top network</span><strong id="statNetwork">—</strong><small id="statNetworkDetail">No data yet</small></article>
       </div>
 
       <div class="analytics-grid">
         <article class="chart-card">
-          <div class="chart-card-heading"><h3>Top genres</h3><span>titles</span></div>
-          <div id="genreBars" class="bar-list"></div>
+          <div class="chart-card-heading"><h3>Genre share</h3><span>% of titles</span></div>
+          <div id="genreBars" class="bar-list"></div><p class="chart-note">Titles can have multiple genres, so percentages may total over 100%.</p>
         </article>
         <article class="chart-card">
-          <div class="chart-card-heading"><h3>Networks & services</h3><span>titles</span></div>
-          <div id="networkBars" class="bar-list"></div>
+          <div class="chart-card-heading"><h3>Network share</h3><span>% of titles</span></div>
+          <div id="networkBars" class="bar-list"></div><p class="chart-note">Share of this year’s TV seasons and movies. Missing networks count as Unknown.</p>
         </article>
         <article class="chart-card">
-          <div class="chart-card-heading"><h3>Status mix</h3><span>titles</span></div>
+          <div class="chart-card-heading"><h3>Status mix</h3><span>% of titles</span></div>
           <div id="statusBars" class="bar-list"></div>
         </article>
         <article class="chart-card trend-card">
@@ -70,8 +84,21 @@
           <div id="ratingTrend" class="trend-wrap"></div>
         </article>
       </div>
+      <div class="rating-insights-grid">
+        <article class="chart-card">
+          <div class="chart-card-heading"><h3>Rating distribution</h3><span>Your scores · 0–10</span></div>
+          <div id="ratingDistribution" class="rating-histogram"></div>
+          <p class="chart-note">Number of rated TV seasons and movies. Each bin includes decimals up to the next score (7 includes 7.0–7.9); 10 stands alone. Unrated titles are excluded.</p>
+        </article>
+        <article class="chart-card">
+          <div class="chart-card-heading"><h3>Highest-rated networks</h3><span>Average score</span></div>
+          <div id="networkRatings" class="bar-list"></div>
+          <p class="chart-note">Minimum 3 rated titles per network in this year. Each TV season or movie counts once; titles without a network are excluded.</p>
+        </article>
+      </div>
     </section>
 
+    <div id="librarySection">
     <section class="toolbar" aria-label="Filters">
       <label class="field field-search">
         <span>Search</span>
@@ -90,7 +117,7 @@
         <select id="statusFilter"><option value="">All statuses</option></select>
       </label>
       <label class="field">
-        <span>Network / Service</span>
+        <span>Network</span>
         <select id="networkFilter"><option value="">All networks</option></select>
       </label>
       <label class="field">
@@ -110,14 +137,14 @@
               <th class="col-title"><button class="sort-button" data-sort="title" type="button">Title <span></span></button></th>
               <th class="col-season"><button class="sort-button" data-sort="season" type="button">S <span></span></button></th>
               <th class="col-rating"><button class="sort-button" data-sort="rating" type="button">Rating <span></span></button></th>
-              <th class="col-network"><button class="sort-button" data-sort="network" type="button">Network / Service <span></span></button></th>
+              <th class="col-external-ratings">External scores</th>
+              <th class="col-network"><button class="sort-button" data-sort="network" type="button">Network <span></span></button></th>
               <th class="col-status"><button class="sort-button" data-sort="status" type="button">Status <span></span></button></th>
               <th class="col-genre"><button class="sort-button" data-sort="genre" type="button">Genre <span></span></button></th>
               <th class="col-episodes"><button class="sort-button" data-sort="episodeCount" type="button">Episodes <span></span></button></th>
               <th class="col-runtime"><button class="sort-button" data-sort="runtime" type="button">Runtime <span></span></button></th>
-              <th class="col-start"><button class="sort-button" data-sort="startDate" type="button">Release <span></span></button></th>
+              <th class="col-start"><button class="sort-button" data-sort="startDate" type="button">Premier <span></span></button></th>
               <th class="col-link">Trailer</th>
-              <th class="col-link">Links</th>
               <th class="col-note">Note</th>
               <th class="col-actions edit-only-column" aria-label="Actions"></th>
             </tr>
@@ -134,11 +161,24 @@
       </div>
     </section>
 
+    </div>
+
     <footer class="footer">
       <span>TV metadata powered by <a href="https://www.tvmaze.com/" target="_blank" rel="noreferrer">TVmaze</a>.</span>
       <span>Visitors always see the published <code>shows.json</code> stored in this GitHub repository.</span>
     </footer>
   </main>
+
+  <dialog id="mdblistDialog" class="dialog dialog-small">
+    <form id="mdblistForm" class="dialog-body">
+      <h2>MDBList ratings</h2>
+      <p class="helper">Your key stays in this browser and is never included in exported catalogs. Only Fetch or Refresh ratings sends a MDBList request.</p>
+      <label class="field"><span>API key</span><input id="mdblistKey" type="password" autocomplete="off" spellcheck="false" /></label>
+      <p class="helper">Save a title with its IMDb ID first, then use Fetch in its Ratings column. TV scores are for the overall series, not individual seasons.</p>
+      <p id="mdblistSettingsMessage" class="helper" role="status"></p>
+      <div class="dialog-actions"><button id="mdblistCancel" type="button" class="button">Cancel</button><button type="submit" class="button button-primary">Save key</button></div>
+    </form>
+  </dialog>
 
   <dialog id="showDialog" class="dialog">
     <form id="showForm" method="dialog" novalidate>
@@ -197,7 +237,7 @@
             <select id="entryStatus"></select>
           </label>
           <label class="field field-block">
-            <span>Network / service / studio</span>
+            <span>Network</span>
             <input id="entryNetwork" placeholder="e.g. HBO Max, A24" />
           </label>
           <label class="field field-block span-2">
@@ -231,6 +271,10 @@
           <label id="tvdbField" class="field field-block">
             <span>TVDB ID</span>
             <input id="entryTvdb" placeholder="12345" />
+          </label>
+          <label class="field field-block span-2">
+            <span>Synopsis</span>
+            <textarea id="entrySynopsis" rows="3" placeholder="A short description shown when hovering over the title…"></textarea>
           </label>
           <label class="field field-block span-2">
             <span>Comments</span>

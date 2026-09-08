@@ -12,6 +12,7 @@
     publishedEntries: [],
     workingEntries: loadWorkingLibrary(),
     activeYear: CURRENT_YEAR,
+    activeView: 'library',
     sort: { key: 'rating', direction: 'desc' },
     editingId: null,
     selectedShow: null,
@@ -21,17 +22,30 @@
   };
 
   const el = Object.fromEntries([
-    'yearHeading','yearTabs','editActions','publicModeBtn','modeBanner','publishedStatus','analyticsSection','analyticsTitle','analyticsSubtitle',
+    'mdblistSettingsBtn','mdblistDialog','mdblistForm','mdblistKey','mdblistCancel','mdblistSettingsMessage','yearTabs','yearSubtabs','libraryTab','dashboardTab','librarySection','editActions','publicModeBtn','modeBanner','publishedStatus','analyticsSection','analyticsTitle','analyticsSubtitle',
     'statTitles','statTitlesDetail','statHours','statHoursDetail','statRating','statRatingDetail','statGenres','statGenreDetail','statNetwork','statNetworkDetail',
-    'genreBars','networkBars','statusBars','ratingTrend','trendLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
+    'ratingDistribution','networkRatings','genreBars','networkBars','statusBars','ratingTrend','trendLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
     'searchFilter','typeFilter','statusFilter','networkFilter','genreFilter','visibleCount','showsBody','emptyState','emptyTitle','emptyText',
     'showDialog','showForm','dialogEyebrow','dialogTitle','searchStep','detailsStep','chooseTvBtn','chooseMovieBtn','tvSearchArea','showSearchInput',
     'showSearchBtn','searchMessage','searchResults','manualEntryBtn','selectedShowCard','entryMediaType','entryTitle','entrySeason','entryYear','entryRating',
     'entryStatus','entryNetwork','entryGenres','entryEpisodeCount','entryEpisodesWatched','entryRuntime','entryStartDate','entryWatchedDate','entryImdb','entryTvdb',
-    'entryComments','seasonField','episodeCountField','episodesWatchedField','tvdbField','runtimeLabel','releaseDateLabel','metadataMessage','backToSearchBtn','saveEntryBtn',
+    'entrySynopsis','entryComments','seasonField','episodeCountField','episodesWatchedField','tvdbField','runtimeLabel','releaseDateLabel','metadataMessage','backToSearchBtn','saveEntryBtn',
     'commentsDialog','commentsTitle','commentsBody','editFromCommentsBtn','toast'
   ].map(id => [id, document.getElementById(id)]));
 
+  const ratingsPending = new Set();
+  const MDBLIST_KEY_STORAGE = 'viewlog.mdblist.key';
+  const synopsisCache = new Map();
+  let synopsisAnchor = null;
+  const synopsisTip = document.createElement('div');
+  synopsisTip.id = 'synopsisTip';
+  synopsisTip.className = 'synopsis-tooltip';
+  synopsisTip.setAttribute('role', 'tooltip');
+  synopsisTip.hidden = true;
+  document.body.append(synopsisTip);
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') hideSynopsis(); });
+  window.addEventListener('scroll', hideSynopsis, true);
+  window.addEventListener('resize', hideSynopsis);
   init();
 
   async function init() {
@@ -47,6 +61,26 @@
   }
 
   function bindEvents() {
+    el.mdblistSettingsBtn.addEventListener('click', () => {
+      try { el.mdblistKey.value = localStorage.getItem(MDBLIST_KEY_STORAGE) || ''; } catch { el.mdblistKey.value = ''; }
+      el.mdblistSettingsMessage.textContent = '';
+      el.mdblistDialog.showModal();
+    });
+    el.mdblistCancel.addEventListener('click', () => el.mdblistDialog.close());
+    el.mdblistDialog.addEventListener('close', () => { el.mdblistKey.value = ''; });
+    el.mdblistForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (state.mode !== 'edit') return;
+      try {
+        const key = el.mdblistKey.value.trim();
+        if (key) localStorage.setItem(MDBLIST_KEY_STORAGE, key);
+        else localStorage.removeItem(MDBLIST_KEY_STORAGE);
+        el.mdblistDialog.close();
+        showToast(key ? 'MDBList key saved in this browser.' : 'MDBList key removed.');
+      } catch { el.mdblistSettingsMessage.textContent = 'Browser storage is unavailable. The key could not be saved.'; }
+    });
+    el.libraryTab.addEventListener('click', () => setYearView('library'));
+    el.dashboardTab.addEventListener('click', () => setYearView('dashboard'));
     el.publicModeBtn.addEventListener('click', exitEditor);
     el.addShowBtn.addEventListener('click', openAddDialog);
     el.emptyAddBtn.addEventListener('click', openAddDialog);
@@ -160,6 +194,11 @@
       watchedDate: String(raw.watchedDate || ''),
       imdb: cleanImdb(raw.imdb),
       tvdb: mediaType === 'movie' ? '' : (raw.tvdb ? String(raw.tvdb).trim() : ''),
+      externalRatings: normalizeExternalRatings(raw.externalRatings),
+      ratingsUpdatedAt: String(raw.ratingsUpdatedAt || ''),
+      ratingsImdbId: cleanImdb(raw.ratingsImdbId),
+      ratingsUrls: { rt: safeRatingUrl(raw.ratingsUrls?.rt, 'www.rottentomatoes.com'), mc: safeRatingUrl(raw.ratingsUrls?.mc, 'www.metacritic.com'), mal: safeRatingUrl(raw.ratingsUrls?.mal, 'myanimelist.net') },
+      synopsis: String(raw.synopsis || ''),
       comments: String(raw.comments || ''),
       tvmazeUrl: String(raw.tvmazeUrl || ''),
       image: String(raw.image || ''),
@@ -173,6 +212,26 @@
     refreshFilters();
     renderAnalytics();
     renderTable();
+    updateYearView();
+  }
+
+
+  function setYearView(view) {
+    state.activeView = state.activeYear === 'all' ? 'library' : view;
+    updateYearView();
+  }
+
+  function updateYearView() {
+    const isAll = state.activeYear === 'all';
+    const dashboard = !isAll && state.activeView === 'dashboard';
+    el.yearSubtabs.hidden = isAll;
+    el.analyticsSection.hidden = !dashboard;
+    el.librarySection.hidden = dashboard;
+    el.libraryTab.classList.toggle('active', !dashboard);
+    el.dashboardTab.classList.toggle('active', dashboard);
+    el.libraryTab.setAttribute('aria-pressed', String(!dashboard));
+    el.dashboardTab.setAttribute('aria-pressed', String(dashboard));
+    el.yearSubtabs.setAttribute('aria-label', state.activeYear + ' views');
   }
 
   function refreshYearTabs() {
@@ -184,9 +243,9 @@
       `<button class="year-tab all-years${state.activeYear === 'all' ? ' active' : ''}" type="button" data-year="all">All</button>`;
     el.yearTabs.querySelectorAll('.year-tab').forEach(button => button.addEventListener('click', () => {
       state.activeYear = button.dataset.year === 'all' ? 'all' : Number(button.dataset.year);
+      state.activeView = 'library';
       refreshEverything();
     }));
-    el.yearHeading.textContent = state.activeYear === 'all' ? 'All' : String(state.activeYear);
   }
 
   function fillStatusSelects() {
@@ -216,16 +275,16 @@
       el.analyticsSection.hidden = true;
       return;
     }
-    el.analyticsSection.hidden = false;
+    el.analyticsSection.hidden = state.activeView !== 'dashboard';
     const entries = getYearEntries();
     const tvCount = entries.filter(entry => entry.mediaType === 'tv').length;
     const movieCount = entries.filter(entry => entry.mediaType === 'movie').length;
     const rated = entries.filter(entry => entry.rating !== null);
     const genres = uniqueSorted(entries.flatMap(entry => entry.genres));
     const totalMinutes = entries.reduce((sum, entry) => sum + watchedMinutes(entry), 0);
-    const networkCounts = countBy(entries.map(entry => entry.network).filter(Boolean));
+    const networkCounts = countBy(entries.map(entry => entry.network || 'Unknown'));
     const topNetwork = sortedCounts(networkCounts)[0];
-    const genreCounts = countBy(entries.flatMap(entry => entry.genres));
+    const genreCounts = countBy(entries.flatMap(entry => [...new Set(entry.genres)]));
     const statusCounts = countBy(entries.map(entry => entry.status));
 
     el.analyticsTitle.textContent = `${state.activeYear} statistics`;
@@ -241,10 +300,44 @@
     el.statNetwork.textContent = topNetwork?.[0] || '—';
     el.statNetworkDetail.textContent = topNetwork ? `${topNetwork[1]} title${topNetwork[1] === 1 ? '' : 's'}` : 'No network data';
 
-    renderBars(el.genreBars, sortedCounts(genreCounts).slice(0, 6));
-    renderBars(el.networkBars, sortedCounts(networkCounts).slice(0, 6));
-    renderBars(el.statusBars, STATUS_OPTIONS.map(status => [status, statusCounts[status] || 0]).filter(([, value]) => value > 0), true);
+    renderBars(el.genreBars, sortedCounts(genreCounts), false, entries.length);
+    renderBars(el.networkBars, sortedCounts(networkCounts), false, entries.length);
+    renderBars(el.statusBars, STATUS_OPTIONS.map(status => [status, statusCounts[status] || 0]).filter(([, value]) => value > 0), true, entries.length);
     renderRatingTrend(entries);
+    renderRatingInsights(entries);
+  }
+
+
+  function ratingInsights(entries) {
+    const bins = Array(11).fill(0);
+    const networks = new Map();
+    entries.forEach(entry => {
+      if (!Number.isFinite(entry.rating) || entry.rating < 0 || entry.rating > 10) return;
+      bins[Math.floor(entry.rating)]++;
+      const name = (entry.network || '').trim();
+      if (!name) return;
+      const group = networks.get(name) || { name, total: 0, count: 0 };
+      group.total += entry.rating;
+      group.count++;
+      networks.set(name, group);
+    });
+    const ranked = [...networks.values()].filter(group => group.count >= 3)
+      .map(group => ({ ...group, average: group.total / group.count }))
+      .sort((a, b) => b.average - a.average || b.count - a.count || a.name.localeCompare(b.name));
+    return { bins, ranked };
+  }
+
+  function renderRatingInsights(entries) {
+    const { bins, ranked } = ratingInsights(entries);
+    const count = bins.reduce((sum, value) => sum + value, 0);
+    const max = Math.max(1, ...bins);
+    el.ratingDistribution.innerHTML = count ? bins.map((value, index) => {
+      const label = index === 10 ? '10' : index + '–<' + (index + 1);
+      return `<div class="histogram-bin" aria-label="${escapeAttr(label)}: ${value} titles"><span class="histogram-count">${value}</span><div class="histogram-track"><div class="histogram-fill" style="height:${value / max * 100}%;background:hsl(${index * 12} 65% 57%)"></div></div><span class="histogram-label">${index}</span></div>`;
+    }).join('') : '<div class="empty-chart">Add ratings to see your rating distribution.</div>';
+    el.networkRatings.innerHTML = ranked.length ? ranked.map((group, index) =>
+      `<div class="bar-row"><span class="bar-label" title="${escapeAttr(group.name)}">${escapeHTML(group.name)}</span><span class="bar-track"><span class="bar-fill chart-color-${index % 6}" style="width:${group.average * 10}%"></span></span><span class="bar-value"><strong>${group.average.toFixed(2)}<small>/ 10</small></strong><small>${group.count} titles</small></span></div>`
+    ).join('') : '<div class="empty-chart">No networks qualify yet. Rate at least 3 titles from the same network.</div>';
   }
 
   function watchedMinutes(entry) {
@@ -258,15 +351,15 @@
     return Math.max(0, Number(episodes) || 0) * entry.runtime;
   }
 
-  function renderBars(container, pairs, useStatusColors = false) {
+  function renderBars(container, pairs, useStatusColors = false, total = 0) {
     if (!pairs.length) {
       container.innerHTML = '<div class="empty-chart">Not enough data yet.</div>';
       return;
     }
-    const max = Math.max(...pairs.map(([, value]) => value), 1);
-    container.innerHTML = pairs.map(([label, value]) => {
-      const cls = useStatusColors ? ` ${statusClassName(label)}` : '';
-      return `<div class="bar-row"><span class="bar-label" title="${escapeAttr(label)}">${escapeHTML(label)}</span><span class="bar-track"><span class="bar-fill${cls}" style="width:${Math.max(4, value / max * 100)}%"></span></span><span class="bar-value">${value}</span></div>`;
+    const max = total || 1;
+    container.innerHTML = pairs.map(([label, value], index) => {
+      const cls = useStatusColors ? ` ${statusClassName(label)}` : ` chart-color-${index % 6}`;
+      return `<div class="bar-row"><span class="bar-label" title="${escapeAttr(label)}">${escapeHTML(label)}</span><span class="bar-track"><span class="bar-fill${cls}" style="width:${Math.min(100, value / max * 100)}%"></span></span><span class="bar-value" title="${value} of ${total} titles"><strong>${(value / max * 100).toFixed(1)}%</strong><small>${value} titles</small></span></div>`;
     }).join('');
   }
 
@@ -314,6 +407,7 @@
   }
 
   function renderTable() {
+    hideSynopsis();
     const sorted = getFilteredEntries().sort(compareEntries);
     el.showsBody.innerHTML = sorted.map(renderRow).join('');
     el.visibleCount.textContent = String(sorted.length);
@@ -330,12 +424,10 @@
 
   function renderRow(entry) {
     const isEdit = state.mode === 'edit';
-    const ratingStyle = entry.rating === null ? 'background:#34383b;color:#a3abb2;' : ratingStyleText(entry.rating);
+    const ratingStyle = entry.rating === null ? 'background:rgba(140,148,155,.10);color:#a3abb2;border-color:rgba(140,148,155,.22);' : ratingStyleText(entry.rating);
     const networkClass = networkClassName(entry.network);
     const genres = entry.genres.join(', ');
     const trailer = trailerUrl(entry);
-    const imdb = entry.imdb ? `https://www.imdb.com/title/${encodeURIComponent(entry.imdb)}/` : '';
-    const tvdb = entry.tvdb ? `https://thetvdb.com/search?query=${encodeURIComponent(entry.title)}` : '';
     const titleButtonClass = isEdit ? 'title-button editable edit-entry' : 'title-button';
     const titleTag = entry.mediaType === 'movie' ? 'MOV' : 'TV';
     const season = entry.mediaType === 'movie' ? '—' : entry.season;
@@ -349,24 +441,18 @@
       ? `<select class="inline-status ${statusClass}" aria-label="Status for ${escapeAttr(entry.title)}">${STATUS_OPTIONS.map(value => `<option value="${escapeAttr(value)}"${value === entry.status ? ' selected' : ''}>${escapeHTML(value)}</option>`).join('')}</select>`
       : `<span class="status-display ${statusClass}">${escapeHTML(entry.status)}</span>`;
     const noteClass = entry.comments.trim() ? ' note-active' : '';
-    const links = [
-      imdb ? `<a class="text-link" href="${escapeAttr(imdb)}" target="_blank" rel="noreferrer">IMDb</a>` : '',
-      tvdb ? `<a class="text-link" href="${escapeAttr(tvdb)}" target="_blank" rel="noreferrer">TVDB</a>` : '',
-      !imdb && !tvdb && entry.tvmazeUrl ? `<a class="text-link" href="${escapeAttr(entry.tvmazeUrl)}" target="_blank" rel="noreferrer">Maze</a>` : ''
-    ].filter(Boolean).join('');
-
     return `<tr data-id="${escapeAttr(entry.id)}">
-      <td class="title-cell" title="${escapeAttr(entry.title)}"><div class="title-wrap"><span class="media-badge">${titleTag}</span><button class="${titleButtonClass}" type="button">${escapeHTML(entry.title)}</button></div></td>
+      <td class="title-cell"><div class="title-wrap"><span class="media-badge">${titleTag}</span><button class="${titleButtonClass}" type="button">${escapeHTML(entry.title)}</button></div></td>
       <td class="center">${season}</td>
       <td class="rating-cell">${rating}</td>
+      <td class="external-ratings-cell">${renderExternalRatings(entry)}</td>
       <td title="${escapeAttr(entry.network)}"><span class="network-text ${networkClass}">${escapeHTML(entry.network || '—')}</span></td>
       <td>${status}</td>
       <td class="genre-cell" title="${escapeAttr(genres)}">${escapeHTML(genres || '—')}</td>
-      <td class="number ${entry.episodeCount === null ? 'muted-cell' : ''}">${episodes}</td>
-      <td class="number ${entry.runtime === null ? 'muted-cell' : ''}">${runtime}</td>
-      <td class="number ${!entry.startDate ? 'muted-cell' : ''}">${escapeHTML(formatDate(entry.startDate) || '—')}</td>
-      <td class="center"><a class="icon-link" href="${escapeAttr(trailer)}" target="_blank" rel="noreferrer" title="Search YouTube for official trailer">YT</a></td>
-      <td><div class="link-group">${links || '<span class="muted-cell">—</span>'}</div></td>
+      <td class="center ${entry.episodeCount === null ? 'muted-cell' : ''}">${episodes}</td>
+      <td class="center ${entry.runtime === null ? 'muted-cell' : ''}">${runtime}</td>
+      <td class="center ${!entry.startDate ? 'muted-cell' : ''}">${escapeHTML(formatDate(entry.startDate) || '—')}</td>
+      <td class="center"><a class="icon-link" href="${escapeAttr(trailer)}" target="_blank" rel="noreferrer" title="Search YouTube for official trailer" aria-label="Search YouTube for official trailer"><img class="service-icon youtube-icon" src="assets/youtube.png" alt="" width="24" height="24" /></a></td>
       <td class="center"><button class="table-action comment-entry${noteClass}" type="button" title="${entry.comments.trim() ? 'View comments' : 'No comments'}">✎</button></td>
       <td class="edit-only-column"><div class="action-group"><button class="table-action edit-entry" type="button" title="Edit">⋯</button><button class="table-action delete-action delete-entry" type="button" title="Delete">×</button></div></td>
     </tr>`;
@@ -375,19 +461,183 @@
   function bindRowEvents() {
     el.showsBody.querySelectorAll('tr').forEach(row => {
       const id = row.dataset.id;
+      const titleButton = row.querySelector('.title-button');
+      const entry = activeEntries().find(item => item.id === id);
+      titleButton.addEventListener('mouseenter', () => showSynopsis(titleButton, entry));
+      titleButton.addEventListener('focus', () => showSynopsis(titleButton, entry));
+      titleButton.addEventListener('mouseleave', hideSynopsis);
+      titleButton.addEventListener('blur', hideSynopsis);
+      titleButton.addEventListener('click', hideSynopsis);
       row.querySelector('.comment-entry')?.addEventListener('click', () => openComments(id));
       if (state.mode !== 'edit') return;
+      row.querySelector('.fetch-ratings')?.addEventListener('click', () => fetchExternalRatings(id));
       row.querySelectorAll('.edit-entry').forEach(button => button.addEventListener('click', () => openEditDialog(id)));
       row.querySelector('.delete-entry')?.addEventListener('click', () => deleteEntry(id));
       const ratingInput = row.querySelector('.rating-input');
       ratingInput?.addEventListener('input', () => {
         const value = normalizeRating(ratingInput.value);
-        ratingInput.style.cssText = value === null ? 'background:#34383b;color:#a3abb2;' : ratingStyleText(value);
+        ratingInput.style.cssText = value === null ? 'background:rgba(140,148,155,.10);color:#a3abb2;border-color:rgba(140,148,155,.22);' : ratingStyleText(value);
       });
       ratingInput?.addEventListener('change', () => updateInlineRating(id, ratingInput.value));
       const statusSelect = row.querySelector('.inline-status');
       statusSelect?.addEventListener('change', event => updateInlineStatus(id, event.target.value));
     });
+  }
+
+
+  function plainSynopsis(html) {
+    const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+    return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function hideSynopsis() {
+    synopsisAnchor?.removeAttribute('aria-describedby');
+    synopsisAnchor = null;
+    synopsisTip.hidden = true;
+  }
+
+  async function showSynopsis(anchor, entry) {
+    if (!entry) return;
+    hideSynopsis();
+    synopsisAnchor = anchor;
+    anchor.setAttribute('aria-describedby', 'synopsisTip');
+    synopsisTip.textContent = entry.synopsis || 'Loading synopsis…';
+    synopsisTip.hidden = false;
+    const position = () => {
+      const rect = anchor.getBoundingClientRect();
+      synopsisTip.style.left = Math.max(8, Math.min(rect.left, innerWidth - synopsisTip.offsetWidth - 8)) + 'px';
+      synopsisTip.style.top = Math.max(8, Math.min(rect.bottom + 8, innerHeight - synopsisTip.offsetHeight - 8)) + 'px';
+    };
+    position();
+    let summary = entry.synopsis;
+    if (!summary && entry.mediaType === 'tv' && (entry.tvmazeId || entry.imdb)) {
+      const key = entry.tvmazeId ? '/shows/' + encodeURIComponent(entry.tvmazeId) : '/lookup/shows?imdb=' + encodeURIComponent(entry.imdb);
+      if (!synopsisCache.has(key)) {
+        synopsisCache.set(key, fetch(TVMAZE_BASE + key, { signal: AbortSignal.timeout(8000) })
+          .then(response => { if (!response.ok) throw new Error('Synopsis unavailable'); return response.json(); })
+          .then(show => plainSynopsis(show.summary)).catch(() => { synopsisCache.delete(key); return ''; }));
+      }
+      summary = await synopsisCache.get(key);
+    }
+    if (synopsisAnchor !== anchor) return;
+    synopsisTip.textContent = summary || 'No synopsis available yet.';
+    position();
+  }
+
+
+  function externalScore(value, max) {
+    if (value === null || value === undefined || value === '' || value === 'N/A') return null;
+    const score = Number(value);
+    return Number.isFinite(score) && score >= 0 && score <= max ? score : null;
+  }
+
+  function normalizeExternalRatings(raw = {}) {
+    return {
+      imdb: externalScore(raw?.imdb, 10),
+      rt: externalScore(raw?.rt, 100),
+      mc: externalScore(raw?.mc, 100),
+      mal: externalScore(raw?.mal, 10)
+    };
+  }
+
+
+  function safeRatingUrl(value, host) {
+    if (typeof value !== 'string' || !value) return '';
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && url.hostname === host && !url.username && !url.password ? url.href : '';
+    } catch { return ''; }
+  }
+
+  function parseMdblistRatings(data) {
+    const ratings = Array.isArray(data.ratings) ? data.ratings : [];
+    const score = source => ratings.find(item => item.source === source)?.value;
+    return normalizeExternalRatings({ imdb: score('imdb'), rt: score('tomatoes'), mc: score('metacritic'), mal: score('myanimelist') });
+  }
+
+  function parseMdblistUrls(data, mediaType) {
+    const ratings = Array.isArray(data.ratings) ? data.ratings : [];
+    const make = (source, host, prefix) => {
+      const value = ratings.find(item => item.source === source)?.url;
+      if (typeof value !== 'string' || !value) return '';
+      if (value.startsWith('https://')) return safeRatingUrl(value, host);
+      if (!value.startsWith('/') || value.startsWith('//')) return '';
+      const path = prefix && !value.startsWith('/tv/') && !value.startsWith('/movie/') ? prefix + value : value;
+      return safeRatingUrl('https://' + host + path, host);
+    };
+    return {
+      rt: make('tomatoes', 'www.rottentomatoes.com', ''),
+      mc: make('metacritic', 'www.metacritic.com', mediaType === 'tv' ? '/tv' : '/movie'),
+      mal: /^\d+$/.test(String(data.ids?.mal || '')) ? 'https://myanimelist.net/anime/' + data.ids.mal : make('myanimelist', 'myanimelist.net', '')
+    };
+  }
+
+  function renderExternalRatings(entry) {
+    const anime = entry.genres.some(genre => String(genre).trim().toLowerCase() === 'anime');
+    const matches = entry.ratingsImdbId === entry.imdb;
+    const scores = normalizeExternalRatings(matches ? entry.externalRatings : undefined);
+    const date = matches && entry.ratingsUpdatedAt ? new Date(entry.ratingsUpdatedAt) : null;
+    const updated = date && Number.isFinite(date.getTime()) ? date.toLocaleDateString() : '';
+    const scope = entry.mediaType === 'tv' ? 'Overall series scores' : 'Movie scores';
+    const pending = ratingsPending.has(entry.imdb);
+
+    const links = {
+      imdb: /^tt\d+$/.test(entry.imdb) ? 'https://www.imdb.com/title/' + encodeURIComponent(entry.imdb) + '/' : 'https://www.imdb.com/find/?q=' + encodeURIComponent(entry.title),
+      rt: (matches && entry.ratingsUrls?.rt) || 'https://www.rottentomatoes.com/search?search=' + encodeURIComponent(entry.title),
+      mc: (matches && entry.ratingsUrls?.mc) || 'https://www.metacritic.com/search/' + encodeURIComponent(entry.title) + '/',
+      mal: (matches && entry.ratingsUrls?.mal) || 'https://myanimelist.net/anime.php?q=' + encodeURIComponent(entry.title)
+    };
+    const badge = (source, label, value) => `<a class="external-score score-${source}" href="${escapeAttr(links[source])}" target="_blank" rel="noopener noreferrer" aria-label="Open ${label} for ${escapeAttr(entry.title)}"><span>${label}</span><b>${value}</b></a>`;
+    return `<div class="external-ratings" title="${escapeAttr(scope + (updated ? ' · Updated ' + updated : ' · Not fetched') + ' · Missing title links open a search')}">
+      ${badge('imdb', 'IMDb', scores.imdb === null ? '—' : scores.imdb.toFixed(1))}
+      ${anime ? badge('mal', 'MAL', scores.mal === null ? '—' : scores.mal.toFixed(2)) :
+        badge('rt', 'RT', scores.rt === null ? '—' : scores.rt + '%') +
+        badge('mc', 'MC', scores.mc === null ? '—' : scores.mc)}
+    </div>${state.mode === 'edit' ? `<button type="button" class="text-button fetch-ratings" ${pending ? 'disabled' : ''} aria-label="${updated ? 'Refresh' : 'Fetch'} ratings for ${escapeAttr(entry.title)}">${pending ? 'Fetching…' : updated ? 'Refresh ratings' : 'Fetch ratings'}</button>` : ''}`;
+  }
+
+  async function fetchExternalRatings(id) {
+    if (state.mode !== 'edit') return;
+    const entry = findWorkingEntry(id);
+    if (!entry || ratingsPending.has(entry.imdb)) return;
+    if (!/^tt\d+$/.test(entry.imdb)) return showToast('Add a valid IMDb ID in Edit title first.');
+    let key;
+    try { key = localStorage.getItem(MDBLIST_KEY_STORAGE); } catch {}
+    if (!key) { el.mdblistSettingsBtn.click(); return; }
+    const imdb = entry.imdb;
+    ratingsPending.add(imdb);
+    renderTable();
+    try {
+
+      const params = new URLSearchParams({ apikey: key });
+      const kind = entry.mediaType === 'movie' ? 'movie' : 'show';
+      const response = await fetch('https://api.mdblist.com/imdb/' + kind + '/' + encodeURIComponent(imdb) + '?' + params, { signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error(
+        response.status === 429 ? 'MDBList request limit reached. Try again later.' :
+        [401, 403].includes(response.status) ? 'MDBList key was rejected. Check MDBList key settings.' :
+        'MDBList request failed. Existing ratings were kept.');
+      const data = await response.json();
+      if (data.error) throw new Error('MDBList could not return ratings for this title.');
+      if (data.ids?.imdb !== imdb || data.type !== kind) throw new Error('MDBList returned a different title or type. No ratings were saved.');
+      if (state.mode !== 'edit' || findWorkingEntry(id) !== entry || entry.imdb !== imdb) return;
+      const scores = parseMdblistRatings(data);
+      const ratingsUrls = parseMdblistUrls(data, entry.mediaType);
+      const updated = new Date().toISOString();
+      const targets = state.workingEntries.filter(item => item.imdb === imdb && item.mediaType === entry.mediaType);
+      const originals = targets.map(item => ({ item, externalRatings: item.externalRatings, ratingsUrls: item.ratingsUrls, ratingsImdbId: item.ratingsImdbId, ratingsUpdatedAt: item.ratingsUpdatedAt }));
+      targets.forEach(item => Object.assign(item, { externalRatings: scores, ratingsUrls, ratingsImdbId: imdb, ratingsUpdatedAt: updated }));
+      try { saveWorkingLibrary(); } catch {
+        originals.forEach(({ item, ...old }) => Object.assign(item, old));
+        throw new Error('Browser storage is full or unavailable. Ratings could not be saved.');
+      }
+      showToast('Ratings saved locally. Export shows.json to publish. Unavailable scores show —.');
+    } catch (error) {
+      showToast(error.name === 'TimeoutError' ? 'MDBList timed out. Existing ratings were kept.' :
+        error instanceof TypeError ? 'Could not connect to MDBList. Existing ratings were kept.' : error.message);
+    } finally {
+      ratingsPending.delete(imdb);
+      renderTable();
+    }
   }
 
   function compareEntries(a, b) {
@@ -537,7 +787,7 @@
     showSelectedShow(show);
     const entry = blankEntry('tv');
     Object.assign(entry, {
-      title: show.name, network: getNetwork(show), genres: show.genres || [], runtime: show.averageRuntime ?? show.runtime ?? null,
+      synopsis: plainSynopsis(show.summary), title: show.name, network: getNetwork(show), genres: show.genres || [], runtime: show.averageRuntime ?? show.runtime ?? null,
       imdb: show.externals?.imdb || '', tvdb: show.externals?.thetvdb || ''
     });
     fillForm(entry, true);
@@ -623,6 +873,7 @@
     el.entryWatchedDate.value = entry.watchedDate || '';
     el.entryImdb.value = entry.imdb || '';
     el.entryTvdb.value = entry.tvdb || '';
+    el.entrySynopsis.value = entry.synopsis || '';
     el.entryComments.value = entry.comments || '';
     el.saveEntryBtn.textContent = isNew ? 'Add title' : 'Save changes';
     hideMessage(el.metadataMessage);
@@ -642,7 +893,7 @@
     el.episodesWatchedField.hidden = isMovie;
     el.tvdbField.hidden = isMovie;
     el.runtimeLabel.textContent = isMovie ? 'Runtime (min)' : 'Avg. runtime (min)';
-    el.releaseDateLabel.textContent = isMovie ? 'Release date' : 'Season start';
+    el.releaseDateLabel.textContent = isMovie ? 'Premier date' : 'Season premier';
     if (isMovie) {
       el.entrySeason.value = '1';
       el.entryEpisodeCount.value = '';
@@ -690,7 +941,7 @@
       title, season, year, rating, status: el.entryStatus.value, network: el.entryNetwork.value.trim(), genres: splitGenres(el.entryGenres.value),
       episodeCount, episodesWatched, runtime: nullableNumber(el.entryRuntime.value), startDate: el.entryStartDate.value,
       watchedDate: el.entryWatchedDate.value, imdb: cleanImdb(el.entryImdb.value), tvdb: mediaType === 'tv' ? el.entryTvdb.value.trim() : '',
-      comments: el.entryComments.value.trim(), tvmazeUrl: mediaType === 'tv' ? (state.selectedShow?.url ?? existing?.tvmazeUrl ?? '') : '',
+      synopsis: el.entrySynopsis.value.trim(), comments: el.entryComments.value.trim(), tvmazeUrl: mediaType === 'tv' ? (state.selectedShow?.url ?? existing?.tvmazeUrl ?? '') : '',
       image: mediaType === 'tv' ? (state.selectedShow?.image?.medium ?? existing?.image ?? '') : (existing?.image ?? ''),
       createdAt: existing?.createdAt || now, updatedAt: now,
     });
@@ -731,7 +982,7 @@
 
   function exportPublishedJson() {
     if (state.mode !== 'edit') return;
-    const payload = { app: 'Watch Archive', version: 3, publishedAt: new Date().toISOString(), entries: state.workingEntries || [] };
+    const payload = { app: 'Viewlog', version: 3, publishedAt: new Date().toISOString(), entries: state.workingEntries || [] };
     downloadJson(payload, 'shows.json');
     showToast('shows.json downloaded. Replace the copy in GitHub and commit it to publish your changes.');
   }
@@ -752,7 +1003,7 @@
       showToast(`Imported ${imported.length} entries into your local working copy.`);
     } catch (error) {
       console.error(error);
-      alert('That file is not a valid Watch Archive JSON file.');
+      alert('That file is not a valid Viewlog JSON file.');
     }
   }
 
@@ -784,8 +1035,7 @@
   function ratingStyleText(rating) {
     const value = Math.max(0, Math.min(10, Number(rating)));
     const hue = value * 12;
-    const lightness = 43 + Math.abs(5 - value) * .3;
-    return `background:hsl(${hue} 63% ${lightness}%);color:#071008;`;
+    return `background:hsl(${hue} 70% 55% / .11);color:hsl(${hue} 75% 70%);border-color:hsl(${hue} 70% 55% / .24);`;
   }
   function statusClassName(status) {
     return `status-${String(status || '').toLowerCase().replace(/\s+/g, '-')}`;
