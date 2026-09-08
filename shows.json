@@ -1,7 +1,7 @@
 {
   "app": "Viewlog",
   "version": 3,
-  "publishedAt": "2026-09-08T08:05:17.513Z",
+  "publishedAt": "2026-09-08T16:41:02.863Z",
   "entries": [
     {
       "id": "6e29a09f-0d2e-4912-b191-6ca1deb12839",
@@ -12,7 +12,7 @@
       "season": 1,
       "year": 2026,
       "rating": 9.7,
-      "status": "Watching",
+      "status": "Completed",
       "network": "Apple TV",
       "genres": [
         "Comedy",
@@ -43,7 +43,7 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/79390/widows-bay",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/623/1559488.jpg",
       "createdAt": "2026-09-08T04:46:28.596Z",
-      "updatedAt": "2026-09-08T06:56:54.745Z"
+      "updatedAt": "2026-09-08T15:40:52.799Z"
     },
     {
       "id": "3658a62b-f1f4-4d1c-982e-0d7b26e21f53",
@@ -199,14 +199,14 @@
         "imdb": 7.1,
         "rt": null,
         "mc": null,
-        "mal": null
+        "mal": 6.4
       },
-      "ratingsUpdatedAt": "2026-09-08T07:36:29.079Z",
+      "ratingsUpdatedAt": "2026-09-08T15:57:54.549Z",
       "ratingsImdbId": "tt39229633",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/liar_game",
         "mc": "https://www.metacritic.com/tv/igra-lzhetsov",
-        "mal": ""
+        "mal": "https://myanimelist.net/anime/62331"
       },
       "synopsis": "",
       "comments": "",
@@ -352,7 +352,7 @@
       "season": null,
       "year": 2026,
       "rating": 8.2,
-      "status": "Watching",
+      "status": "Completed",
       "network": "",
       "genres": [],
       "episodeCount": null,
@@ -380,7 +380,7 @@
       "tvmazeUrl": "",
       "image": "",
       "createdAt": "2026-09-08T07:16:36.770Z",
-      "updatedAt": "2026-09-08T07:28:20.386Z"
+      "updatedAt": "2026-09-08T15:40:49.422Z"
     },
     {
       "id": "e7cb8431-a12a-4e0c-85ba-a2cf9ee975e0",
@@ -391,13 +391,13 @@
       "season": 2,
       "year": 2026,
       "rating": 6.2,
-      "status": "Watching",
+      "status": "Completed",
       "network": "Apple TV",
       "genres": [
         "Thriller"
       ],
       "episodeCount": 8,
-      "episodesWatched": null,
+      "episodesWatched": 8,
       "runtime": 46,
       "startDate": "2026-01-14",
       "watchedDate": "",
@@ -421,7 +421,7 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/61739/hijack",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521070.jpg",
       "createdAt": "2026-09-08T07:35:39.675Z",
-      "updatedAt": "2026-09-08T07:35:39.675Z"
+      "updatedAt": "2026-09-08T15:40:45.467Z"
     },
     {
       "id": "ec269c86-ce23-41b2-8888-62db3eca1428",
@@ -488,16 +488,16 @@
       "imdb": "tt32252887",
       "tvdb": "455830",
       "externalRatings": {
-        "imdb": null,
-        "rt": null,
-        "mc": null,
+        "imdb": 6.8,
+        "rt": 94,
+        "mc": 85,
         "mal": null
       },
-      "ratingsUpdatedAt": "",
-      "ratingsImdbId": "",
+      "ratingsUpdatedAt": "2026-09-08T15:46:30.337Z",
+      "ratingsImdbId": "tt32252887",
       "ratingsUrls": {
-        "rt": "",
-        "mc": "",
+        "rt": "https://www.rottentomatoes.com/tv/bait",
+        "mc": "https://www.metacritic.com/tv/bait",
         "mal": ""
       },
       "synopsis": "Bait is about a struggling actor, whose last chance to hit it big comes in the form of an audition of a lifetime. The series follows him over the course of four wild days as his life spirals out of control and his family, ex-lover and the entire world weigh in on whether he is the right man for the job.",
@@ -506,6 +506,302 @@
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/619/1548335.jpg",
       "createdAt": "2026-09-08T08:05:05.485Z",
       "updatedAt": "2026-09-08T08:05:12.157Z"
+    },
+    {
+      "id": "b147ce07-9532-4bae-a0c6-8e19b4e5db0b",
+      "mediaType": "tv",
+      "tvmazeId": 75632,
+      "tvmazeSeasonId": 181771,
+      "title": "The Pitt",
+      "season": 2,
+      "year": 2026,
+      "rating": 9.5,
+      "status": "Completed",
+      "network": "HBO Max",
+      "genres": [
+        "Drama",
+        "Medical"
+      ],
+      "episodeCount": 15,
+      "episodesWatched": 15,
+      "runtime": 48,
+      "startDate": "2026-01-08",
+      "watchedDate": "",
+      "imdb": "tt31938062",
+      "tvdb": "448176",
+      "externalRatings": {
+        "imdb": 8.9,
+        "rt": 96,
+        "mc": 85,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T15:46:38.066Z",
+      "ratingsImdbId": "tt31938062",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/the_pitt",
+        "mc": "https://www.metacritic.com/tv/the-pitt",
+        "mal": ""
+      },
+      "synopsis": "The Pitt is a realistic examination of the challenges facing healthcare workers in today's America as seen through the lens of the frontline heroes working in a modern-day hospital in Pittsburgh, Pennsylvania. Each episode follows an hour of Dr. Robby's 15-hour shift as the chief attendant in Pittsburgh Trauma Medical Hospital's emergency room.",
+      "comments": "Another banger of a season. Writers are really good at ramping the season. Slightly different tone than S1 esp with Robbie. I found the \"main disaster\" of the season not as compelling as S1, nonetheless, I find this show to be appointment viewing. The Pitt at its lowest is still better than 99% of shows out in the calendar year.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/75632/the-pitt",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/606/1516776.jpg",
+      "createdAt": "2026-09-08T15:33:05.288Z",
+      "updatedAt": "2026-09-08T15:40:51.365Z"
+    },
+    {
+      "id": "b025db05-9bf7-468a-b904-cad10e431992",
+      "mediaType": "tv",
+      "tvmazeId": 2285,
+      "tvmazeSeasonId": 161945,
+      "title": "The Night Manager",
+      "season": 2,
+      "year": 2026,
+      "rating": 7.1,
+      "status": "Completed",
+      "network": "BBC iPlayer",
+      "genres": [
+        "Drama",
+        "Thriller",
+        "Espionage"
+      ],
+      "episodeCount": 6,
+      "episodesWatched": 6,
+      "runtime": 58,
+      "startDate": "2026-01-01",
+      "watchedDate": "",
+      "imdb": "tt1399664",
+      "tvdb": "290508",
+      "externalRatings": {
+        "imdb": 8,
+        "rt": 88,
+        "mc": 79,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T15:46:56.351Z",
+      "ratingsImdbId": "tt1399664",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/the_night_manager",
+        "mc": "https://www.metacritic.com/tv/the-night-manager",
+        "mal": ""
+      },
+      "synopsis": "Drama series based on the John le Carré novel. A hotel night manager is recruited by a government agent to infiltrate the inner circle of a ruthless arms dealer.",
+      "comments": "This show returns after a massive hiatus, decent little spy thriller. Found the twist at the end somewhat thrown in but I'd still watch more. The 6 ep length of UK shows are always nice.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/2285/the-night-manager",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/606/1515144.jpg",
+      "createdAt": "2026-09-08T15:34:45.262Z",
+      "updatedAt": "2026-09-08T15:40:43.288Z"
+    },
+    {
+      "id": "360e39d4-6fc5-4d92-821a-3d7aee915dda",
+      "mediaType": "tv",
+      "tvmazeId": 90197,
+      "tvmazeSeasonId": 197499,
+      "title": "Daemons of the Shadow Realm",
+      "season": 1,
+      "year": 2026,
+      "rating": 7.8,
+      "status": "Completed",
+      "network": "Tokyo MX",
+      "genres": [
+        "Action",
+        "Anime",
+        "Fantasy"
+      ],
+      "episodeCount": 24,
+      "episodesWatched": 24,
+      "runtime": 25,
+      "startDate": "2026-04-04",
+      "watchedDate": "",
+      "imdb": "tt37532356",
+      "tvdb": "452711",
+      "externalRatings": {
+        "imdb": 7.8,
+        "rt": null,
+        "mc": null,
+        "mal": 7.8
+      },
+      "ratingsUpdatedAt": "2026-09-08T16:05:37.269Z",
+      "ratingsImdbId": "tt37532356",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/daemons_of_the_shadow_realm",
+        "mc": "https://www.metacritic.com/tv/huang-quan-notukai",
+        "mal": "https://myanimelist.net/anime/62001"
+      },
+      "synopsis": "Yuru, a young hunter who lives in a small village deep in the mountains, hunts wild game and leads a humble life with Asa, his younger twin sister. Their peaceful lives are torn apart when a dragon's roar echoes across the sky. What secrets lurk within their village? What fate awaits them? Enter a breathtaking mystical fantasy as exciting Daemon battles intertwine the mysterious and supernatural.",
+      "comments": "Same behind the scenes team as FMA so that immediately got my attention. However, the show is a bit more fantastical that I would like, not as grounded as FMA. Overall, it was fine and probably worth a watch if you're actually into anime and more shounen style anime. Not too sure if I'll continue.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/90197/daemons-of-the-shadow-realm",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/620/1551213.jpg",
+      "createdAt": "2026-09-08T16:05:32.675Z",
+      "updatedAt": "2026-09-08T16:19:45.102Z"
+    },
+    {
+      "id": "3ed3ff5c-47db-43ee-a4e8-0a34448c7b16",
+      "mediaType": "tv",
+      "tvmazeId": 86488,
+      "tvmazeSeasonId": 189667,
+      "title": "Big Mistakes",
+      "season": 1,
+      "year": 2026,
+      "rating": 8.2,
+      "status": "Completed",
+      "network": "Netflix",
+      "genres": [
+        "Comedy"
+      ],
+      "episodeCount": 8,
+      "episodesWatched": 8.2,
+      "runtime": 33,
+      "startDate": "2026-04-09",
+      "watchedDate": "",
+      "imdb": "tt36957934",
+      "tvdb": "466852",
+      "externalRatings": {
+        "imdb": 7.2,
+        "rt": 80,
+        "mc": 65,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T16:07:46.849Z",
+      "ratingsImdbId": "tt36957934",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/big_mistakes",
+        "mc": "https://www.metacritic.com/tv/big-mistakes",
+        "mal": ""
+      },
+      "synopsis": "Big Mistakes follows Nicky and Morgan, two deeply incapable siblings who are in over their heads when a misguided theft for their dying grandmother accidentally pulls them into the world of organized crime. Blackmailed into increasingly dangerous assignments, they clumsily fail upwards, sinking deeper into chaos they're ill-equipped to handle.",
+      "comments": "This was such a fast binge. Great comedy, fun premise, good acting and writing. Will definitely watch S2.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/86488/big-mistakes",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/619/1549408.jpg",
+      "createdAt": "2026-09-08T16:07:30.612Z",
+      "updatedAt": "2026-09-08T16:07:54.768Z"
+    },
+    {
+      "id": "76e7472e-b06c-406b-bfe5-3f9f006b6706",
+      "mediaType": "tv",
+      "tvmazeId": 54285,
+      "tvmazeSeasonId": 176376,
+      "title": "BEEF",
+      "season": 2,
+      "year": 2026,
+      "rating": 7.8,
+      "status": "Completed",
+      "network": "Netflix",
+      "genres": [
+        "Drama",
+        "Comedy"
+      ],
+      "episodeCount": 8,
+      "episodesWatched": 8,
+      "runtime": 44,
+      "startDate": "2026-04-16",
+      "watchedDate": "",
+      "imdb": "tt14403178",
+      "tvdb": "399838",
+      "externalRatings": {
+        "imdb": 8,
+        "rt": 93,
+        "mc": 82,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T16:16:34.286Z",
+      "ratingsImdbId": "tt14403178",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/beef",
+        "mc": "https://www.metacritic.com/tv/beef",
+        "mal": ""
+      },
+      "synopsis": "They're frustrated, furious — and finally feeling something. Two strangers act on their darkest impulses in the aftermath of a road-rage incident.",
+      "comments": "Incredible cast compared to S1, however, the main \"beef\" was not nearly as compelling as S1. Overall fine watch. Wish the characters were more cutthroat like S1. I do enjoy the creative team behind this show and it's typically much harder to pull off a great S2 to any show. I will certainly watch S3 if it ever comes out. I know the writing team is now working on X-Men movie for Marvel so S3 might be a while.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/54285/beef",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/621/1554643.jpg",
+      "createdAt": "2026-09-08T16:16:26.457Z",
+      "updatedAt": "2026-09-08T16:16:33.124Z"
+    },
+    {
+      "id": "c816089d-da94-429c-8b9c-e3c24e3141c4",
+      "mediaType": "tv",
+      "tvmazeId": 78442,
+      "tvmazeSeasonId": 172482,
+      "title": "Something Very Bad Is Going to Happen",
+      "season": 1,
+      "year": 2026,
+      "rating": 7.4,
+      "status": "Completed",
+      "network": "Netflix",
+      "genres": [
+        "Horror",
+        "Mystery",
+        "Supernatural"
+      ],
+      "episodeCount": 8,
+      "episodesWatched": 8,
+      "runtime": 46,
+      "startDate": "2026-03-26",
+      "watchedDate": "",
+      "imdb": "tt32937780",
+      "tvdb": "452277",
+      "externalRatings": {
+        "imdb": 6.8,
+        "rt": 85,
+        "mc": 65,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T16:19:06.652Z",
+      "ratingsImdbId": "tt32937780",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/something_very_bad_is_going_to_happen",
+        "mc": "https://www.metacritic.com/tv/something-very-bad-is-going-to-happen",
+        "mal": ""
+      },
+      "synopsis": "A bride has a feeling that something horrifying will happen at her wedding — and the closer to the altar she gets, the worse it becomes.",
+      "comments": "Interesting little horror show. It was a surprise drop by Netflix and ended up on their top 10 for 2 weeks. I found the mystery very mid but there was some serious scares in this show. I think if you're a general fan of horror this would be worth the watch. The main girl was excellent in this.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/78442/something-very-bad-is-going-to-happen",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/619/1548691.jpg",
+      "createdAt": "2026-09-08T16:18:54.420Z",
+      "updatedAt": "2026-09-08T16:19:42.748Z"
+    },
+    {
+      "id": "52ab702f-27b0-45fb-9500-9777fb09d823",
+      "mediaType": "tv",
+      "tvmazeId": 81228,
+      "tvmazeSeasonId": 178271,
+      "title": "Lucky",
+      "season": 1,
+      "year": 2026,
+      "rating": 6.3,
+      "status": "Completed",
+      "network": "Apple TV",
+      "genres": [
+        "Action",
+        "Thriller"
+      ],
+      "episodeCount": 7,
+      "episodesWatched": 7,
+      "runtime": 45,
+      "startDate": "2026-07-15",
+      "watchedDate": "",
+      "imdb": "tt34866681",
+      "tvdb": "457437",
+      "externalRatings": {
+        "imdb": 6.7,
+        "rt": 79,
+        "mc": 68,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T16:24:02.118Z",
+      "ratingsImdbId": "tt34866681",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/lucky_2026",
+        "mc": "https://www.metacritic.com/tv/lucky-2026",
+        "mal": ""
+      },
+      "synopsis": "When a multi-million-dollar heist goes sideways, con artist Lucky is forced to go on the run. Pursued by both the FBI and a ruthless crime boss, Lucky must fight for her life — and a way out.",
+      "comments": "Great cast, very mid execution. I think this show suffered a lot from budget by the end of it and it showed on screen. I think I'd put this into \"dadcore\" tv, so if you're into that it might be a decent background watch. It harkens more into mid-late 2000s type of show, something you'd find on TNT or USA network. There are a few twists but none of them I found too interesting. Might watch S2 if nothing else is on, or as a filler. I think there are better dadcore shows out there.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/81228/lucky",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/632/1582019.jpg",
+      "createdAt": "2026-09-08T16:23:40.349Z",
+      "updatedAt": "2026-09-08T16:24:00.743Z"
     }
   ]
 }
