@@ -17,6 +17,8 @@
     editingId: null,
     selectedShow: null,
     selectedSeasons: [],
+    selectedMovie: null,
+    searchMediaType: 'tv',
     commentEntryId: null,
     searchToken: 0,
   };
@@ -26,7 +28,7 @@
     'statTitles','statTitlesDetail','statHours','statHoursDetail','statRating','statRatingDetail','statGenres','statGenreDetail','statNetwork','statNetworkDetail',
     'ratingDistribution','networkRatings','genreBars','networkBars','statusBars','ratingTrend','trendLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
     'searchFilter','typeFilter','statusFilter','networkFilter','genreFilter','visibleCount','showsBody','emptyState','emptyTitle','emptyText',
-    'showDialog','showForm','dialogEyebrow','dialogTitle','searchStep','detailsStep','chooseTvBtn','chooseMovieBtn','tvSearchArea','showSearchInput',
+    'showDialog','showForm','dialogEyebrow','dialogTitle','searchStep','detailsStep','chooseTvBtn','chooseMovieBtn','tvSearchArea','searchLabel','searchHelper','showSearchInput',
     'showSearchBtn','searchMessage','searchResults','manualEntryBtn','selectedShowCard','entryMediaType','entryTitle','entrySeason','entryYear','entryRating',
     'entryStatus','entryNetwork','entryGenres','entryEpisodeCount','entryEpisodesWatched','entryRuntime','entryStartDate','entryWatchedDate','entryImdb','entryTvdb',
     'entrySynopsis','entryComments','seasonField','episodeCountField','episodesWatchedField','tvdbField','runtimeLabel','releaseDateLabel','metadataMessage','backToSearchBtn','saveEntryBtn',
@@ -95,12 +97,12 @@
 
     document.querySelectorAll('.sort-button').forEach(button => button.addEventListener('click', () => setSort(button.dataset.sort)));
     el.chooseTvBtn.addEventListener('click', chooseTvFlow);
-    el.chooseMovieBtn.addEventListener('click', openMovieDetails);
+    el.chooseMovieBtn.addEventListener('click', chooseMovieFlow);
     el.showSearchBtn.addEventListener('click', searchShows);
     el.showSearchInput.addEventListener('keydown', event => {
       if (event.key === 'Enter') { event.preventDefault(); searchShows(); }
     });
-    el.manualEntryBtn.addEventListener('click', () => openManualTvDetails(el.showSearchInput.value.trim()));
+    el.manualEntryBtn.addEventListener('click', () => state.searchMediaType === 'movie' ? openManualMovieDetails(el.showSearchInput.value.trim()) : openManualTvDetails(el.showSearchInput.value.trim()));
     el.backToSearchBtn.addEventListener('click', showChoiceView);
     el.entrySeason.addEventListener('change', loadSelectedSeasonMetadata);
     el.entryMediaType.addEventListener('change', () => setFormType(el.entryMediaType.value));
@@ -699,9 +701,13 @@
   }
 
   function showChoiceView() {
+    state.searchToken++;
+    state.selectedMovie = null;
+    el.saveEntryBtn.disabled = false;
     state.editingId = null;
     state.selectedShow = null;
     state.selectedSeasons = [];
+    state.searchMediaType = 'tv';
     el.searchStep.hidden = false;
     el.detailsStep.hidden = true;
     el.tvSearchArea.hidden = true;
@@ -711,6 +717,29 @@
   }
 
   function chooseTvFlow() {
+    state.searchToken++;
+    el.searchResults.innerHTML = '';
+    el.showSearchBtn.disabled = false;
+    el.showSearchBtn.textContent = 'Search';
+    state.searchMediaType = 'tv';
+    el.searchLabel.textContent = 'TV show name';
+    el.searchHelper.textContent = 'TV search uses TVmaze. You can still enter a TV season manually if needed.';
+    el.manualEntryBtn.textContent = 'Enter this TV season manually';
+    el.showSearchInput.placeholder = 'e.g. The Bear';
+    el.tvSearchArea.hidden = false;
+    setTimeout(() => el.showSearchInput.focus(), 30);
+  }
+
+  function chooseMovieFlow() {
+    state.searchToken++;
+    el.searchResults.innerHTML = '';
+    el.showSearchBtn.disabled = false;
+    el.showSearchBtn.textContent = 'Search';
+    state.searchMediaType = 'movie';
+    el.searchLabel.textContent = 'Movie title';
+    el.searchHelper.textContent = 'Movie search uses MDBList and your saved API key. You can still enter a movie manually.';
+    el.manualEntryBtn.textContent = 'Enter this movie manually';
+    el.showSearchInput.placeholder = 'e.g. The Matrix';
     el.tvSearchArea.hidden = false;
     setTimeout(() => el.showSearchInput.focus(), 30);
   }
@@ -724,6 +753,11 @@
     el.dialogTitle.textContent = 'Add a movie';
     fillForm(blankEntry('movie'), true);
     setFormType('movie');
+  }
+
+  function openManualMovieDetails(title = '') {
+    openMovieDetails();
+    el.entryTitle.value = title;
   }
 
   function openManualTvDetails(title = '') {
@@ -749,6 +783,7 @@
   }
 
   async function searchShows() {
+    if (state.searchMediaType === 'movie') return searchMovies();
     const query = el.showSearchInput.value.trim();
     if (!query) return showMessage(el.searchMessage, 'Type a show name first.', 'error');
     const token = ++state.searchToken;
@@ -776,6 +811,160 @@
     } finally {
       if (token === state.searchToken) { el.showSearchBtn.disabled = false; el.showSearchBtn.textContent = 'Search'; }
     }
+  }
+
+  function movieResultValue(movie, keys) {
+    for (const key of keys) {
+      const value = movie?.[key];
+      if (value !== null && value !== undefined && value !== '') return value;
+    }
+    return '';
+  }
+
+  function movieSearchResults(data) {
+    const pending = [data];
+    const visited = new Set();
+    const resultKeys = ['results', 'movies', 'items', 'data', 'search', 'payload'];
+    while (pending.length) {
+      const value = pending.shift();
+      if (!value || typeof value !== 'object' || visited.has(value)) continue;
+      visited.add(value);
+      if (Array.isArray(value)) return value;
+      if (movieResultValue(value, ['title', 'name'])) return [value];
+      resultKeys.forEach(key => { if (value[key]) pending.push(value[key]); });
+    }
+    return [];
+  }
+
+  function movieGenres(movie) {
+    if (!Array.isArray(movie?.genres)) return [];
+    return movie.genres.map(genre => typeof genre === 'string' ? genre : (genre?.title || genre?.name)).filter(Boolean);
+  }
+
+  function movieReleaseDate(movie) {
+    const value = String(movieResultValue(movie, ['released', 'release_date', 'date', 'premiered']) || '');
+    return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : '';
+  }
+
+  async function searchMovies() {
+    const query = el.showSearchInput.value.trim();
+    if (!query) return showMessage(el.searchMessage, 'Type a movie title first.', 'error');
+    let key;
+    try { key = localStorage.getItem(MDBLIST_KEY_STORAGE); } catch {}
+    if (!key) { el.mdblistSettingsBtn.click(); return; }
+    const token = ++state.searchToken;
+    el.showSearchBtn.disabled = true;
+    el.showSearchBtn.textContent = 'Searching…';
+    el.searchResults.innerHTML = '';
+    showMessage(el.searchMessage, 'Searching MDBList…');
+    try {
+      const params = new URLSearchParams({ query, apikey: key });
+      const response = await fetch('https://api.mdblist.com/search/movie?' + params, { signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error(response.status === 429 ? 'MDBList request limit reached. Try again later.' : [401, 403].includes(response.status) ? 'MDBList key was rejected. Check MDBList key settings.' : `Search failed (${response.status})`);
+      const data = await response.json();
+      if (data?.error) throw new Error(typeof data.error === 'string' ? `MDBList: ${data.error}` : 'MDBList could not search for movies.');
+      const results = movieSearchResults(data);
+      if (token !== state.searchToken) return;
+      if (!results.length) return showMessage(el.searchMessage, 'No movies found. Try another spelling or enter it manually.', 'error');
+      hideMessage(el.searchMessage);
+      const visible = results.slice(0, 8);
+      el.searchResults.innerHTML = visible.map((movie, index) => {
+        const title = movieResultValue(movie, ['title', 'name']);
+        const released = movieReleaseDate(movie).slice(0, 4) || movieResultValue(movie, ['year']);
+        const genres = movieGenres(movie).slice(0, 3).join(', ');
+        const image = movieResultValue(movie, ['poster', 'poster_url', 'image']);
+        const meta = [released, genres].filter(Boolean).join(' · ');
+        return `<button class="search-result" type="button" data-index="${index}">${image ? `<img class="search-poster" src="${escapeAttr(image)}" alt="">` : '<span class="search-poster search-poster-placeholder">▦</span>'}<span><span class="search-result-title">${escapeHTML(title)}</span><span class="search-result-meta">${escapeHTML(meta)}</span></span><span class="search-result-arrow">›</span></button>`;
+      }).join('');
+      el.searchResults.querySelectorAll('.search-result').forEach(button => button.addEventListener('click', () => selectMovieSearchResult(visible[Number(button.dataset.index)])));
+    } catch (error) {
+      console.error(error);
+      showMessage(el.searchMessage, error.name === 'TimeoutError' ? 'MDBList timed out. Enter the movie manually or try again.' : error.message || 'Could not reach MDBList. Enter the movie manually.', 'error');
+    } finally {
+      if (token === state.searchToken) { el.showSearchBtn.disabled = false; el.showSearchBtn.textContent = 'Search'; }
+    }
+  }
+
+  function movieIds(movie) {
+    const ids = movie?.ids || {};
+    return {
+      imdb: String(ids.imdb || ids.imdbid || movie?.imdb || movie?.imdb_id || movie?.imdbid || (/^tt\d+$/.test(String(movie?.id)) ? movie.id : '')).trim(),
+      tmdb: String(ids.tmdb || ids.tmdbid || movie?.tmdb || movie?.tmdb_id || movie?.tmdbid || '').trim(),
+      mdblist: String(ids.mdblist || movie?.mdblist_id || movie?.mdblist || (/^m\d+$/.test(String(movie?.id)) ? movie.id : '')).trim()
+    };
+  }
+
+  async function fetchMovieDetails(movie, key) {
+    const ids = movieIds(movie);
+    const provider = /^tt\d+$/.test(ids.imdb) ? 'imdb' : /^\d+$/.test(ids.tmdb) ? 'tmdb' : /^[a-z0-9]+$/i.test(ids.mdblist) ? 'mdblist' : '';
+    const path = provider ? `${provider}/movie/${encodeURIComponent(ids[provider])}` : '';
+    if (!path) throw new Error('This search result has no IMDb or TMDb ID. Metadata could not be loaded; you can enter it manually.');
+    const response = await fetch('https://api.mdblist.com/' + path + '?' + new URLSearchParams({ apikey: key }), { signal: AbortSignal.timeout(15000) });
+    if (!response.ok) throw new Error(response.status === 429 ? 'MDBList request limit reached. The title was added without extra metadata.' : `MDBList metadata lookup failed (${response.status}). The title was added without extra metadata.`);
+    const data = await response.json();
+    if (data?.error) throw new Error(typeof data.error === 'string' ? `MDBList: ${data.error}` : 'MDBList could not load movie metadata.');
+    const detail = data?.data && !movieResultValue(data, ['title', 'name']) ? data.data : data;
+    const returned = movieIds(detail);
+    if (!detail || (detail.type && detail.type !== 'movie') ||
+      (provider === 'imdb' && returned.imdb !== ids.imdb) ||
+      (provider === 'tmdb' && returned.tmdb !== ids.tmdb) ||
+      (provider === 'mdblist' && returned.mdblist !== ids.mdblist &&
+        String(detail.title || '').toLowerCase() !== String(movie.title || '').toLowerCase())) {
+      throw new Error('MDBList returned a different movie or an invalid record. Metadata was not applied.');
+    }
+    return detail;
+  }
+
+  async function selectMovieSearchResult(movie) {
+    const token = ++state.searchToken;
+    state.selectedMovie = null;
+    state.selectedShow = null;
+    state.selectedSeasons = [];
+    el.searchStep.hidden = true;
+    el.detailsStep.hidden = false;
+    el.selectedShowCard.hidden = true;
+    fillForm(blankEntry('movie'), true);
+    setFormType('movie');
+    el.saveEntryBtn.disabled = true;
+    el.dialogTitle.textContent = 'Loading movie details…';
+    showMessage(el.metadataMessage, 'Loading metadata from MDBList…');
+    let fullMovie = movie;
+    let detailError = '';
+    try {
+      let key;
+      try { key = localStorage.getItem(MDBLIST_KEY_STORAGE); } catch {}
+      if (!key) throw new Error('Save your MDBList key to load movie metadata.');
+      fullMovie = await fetchMovieDetails(movie, key);
+    } catch (error) {
+      detailError = error.name === 'TimeoutError' ? 'MDBList timed out. You can complete the fields manually.' : error.message;
+    }
+    if (token !== state.searchToken || state.mode !== 'edit') return;
+    el.saveEntryBtn.disabled = false;
+    const title = String(movieResultValue(fullMovie, ['title', 'name']) || movieResultValue(movie, ['title', 'name']) || '');
+    const ids = movieIds(fullMovie);
+    const entry = blankEntry('movie');
+    Object.assign(entry, {
+      title,
+      genres: movieGenres(fullMovie),
+      runtime: nullableNumber(movieResultValue(fullMovie, ['runtime'])),
+      startDate: movieReleaseDate(fullMovie),
+      imdb: ids.imdb,
+      synopsis: String(movieResultValue(fullMovie, ['description', 'overview', 'plot', 'summary']) || ''),
+      image: String(movieResultValue(fullMovie, ['poster', 'poster_url', 'image']) || '')
+    });
+    el.dialogTitle.textContent = title || 'Add a movie';
+    if (!detailError) {
+      Object.assign(entry, {
+        externalRatings: parseMdblistRatings(fullMovie),
+        ratingsUrls: parseMdblistUrls(fullMovie, 'movie'),
+        ratingsImdbId: entry.imdb,
+        ratingsUpdatedAt: new Date().toISOString()
+      });
+      state.selectedMovie = entry;
+    }
+    fillForm(entry, true);
+    setFormType('movie');
+    if (detailError) showMessage(el.metadataMessage, detailError, 'error');
   }
 
   async function selectSearchResult(show) {
@@ -935,14 +1124,16 @@
     const episodeCount = mediaType === 'tv' ? nullableNumber(el.entryEpisodeCount.value) : null;
     if (episodesWatched === null && ['Completed','Recommended'].includes(el.entryStatus.value)) episodesWatched = episodeCount;
     const entry = normalizeEntry({
-      ...(existing || {}), id: existing?.id || makeId(), mediaType,
+      ...(existing || {}),
+      ...(mediaType === 'movie' && state.selectedMovie?.imdb === cleanImdb(el.entryImdb.value) ? state.selectedMovie : {}),
+      id: existing?.id || makeId(), mediaType,
       tvmazeId: mediaType === 'tv' ? (state.selectedShow?.id ?? existing?.tvmazeId ?? null) : null,
       tvmazeSeasonId: mediaType === 'tv' ? (selectedSeason?.id ?? existing?.tvmazeSeasonId ?? null) : null,
       title, season, year, rating, status: el.entryStatus.value, network: el.entryNetwork.value.trim(), genres: splitGenres(el.entryGenres.value),
       episodeCount, episodesWatched, runtime: nullableNumber(el.entryRuntime.value), startDate: el.entryStartDate.value,
       watchedDate: el.entryWatchedDate.value, imdb: cleanImdb(el.entryImdb.value), tvdb: mediaType === 'tv' ? el.entryTvdb.value.trim() : '',
       synopsis: el.entrySynopsis.value.trim(), comments: el.entryComments.value.trim(), tvmazeUrl: mediaType === 'tv' ? (state.selectedShow?.url ?? existing?.tvmazeUrl ?? '') : '',
-      image: mediaType === 'tv' ? (state.selectedShow?.image?.medium ?? existing?.image ?? '') : (existing?.image ?? ''),
+      image: mediaType === 'tv' ? (state.selectedShow?.image?.medium ?? existing?.image ?? '') : (state.selectedMovie?.image ?? existing?.image ?? ''),
       createdAt: existing?.createdAt || now, updatedAt: now,
     });
 
@@ -959,6 +1150,11 @@
     el.showDialog.close();
     refreshEverything();
     showToast(existing ? 'Local entry updated.' : 'Title added to your local working copy.');
+    if (!existing && /^tt\d+$/.test(entry.imdb) && entry.ratingsImdbId !== entry.imdb) {
+      let mdblistKey;
+      try { mdblistKey = localStorage.getItem(MDBLIST_KEY_STORAGE); } catch {}
+      if (mdblistKey) void fetchExternalRatings(entry.id);
+    }
   }
 
   function openComments(id) {
@@ -987,11 +1183,177 @@
     showToast('shows.json downloaded. Replace the copy in GitHub and commit it to publish your changes.');
   }
 
+  function parseCsv(text) {
+    const rows = [];
+    let row = [], value = '', quoted = false;
+    for (let index = 0; index < text.length; index++) {
+      const char = text[index];
+      if (char === '"') {
+        if (quoted && text[index + 1] === '"') { value += '"'; index++; }
+        else quoted = !quoted;
+      } else if (char === ',' && !quoted) {
+        row.push(value); value = '';
+      } else if ((char === '\n' || char === '\r') && !quoted) {
+        if (char === '\r' && text[index + 1] === '\n') index++;
+        row.push(value); value = '';
+        if (row.some(cell => cell.trim())) rows.push(row);
+        row = [];
+      } else value += char;
+    }
+    row.push(value);
+    if (row.some(cell => cell.trim())) rows.push(row);
+    if (quoted) throw new Error('The CSV contains an unclosed quoted value.');
+    if (rows.length < 2) throw new Error('The CSV has no data rows.');
+    const headers = rows.shift().map(header => header.replace(/^\uFEFF/, '').trim().toLowerCase().replace(/[\s_-]+/g, ''));
+    return rows.map(values => Object.fromEntries(headers.map((header, index) => [header, (values[index] || '').trim()])));
+  }
+
+  function repairImportedTitle(title) {
+    return String(title || '').trim()
+      .replace(/�(?=\d)/g, "'")
+      .replace(/�s\b/g, "'s")
+      .replace(/\s�\s/g, ' – ');
+  }
+
+  function importValue(row, ...names) {
+    for (const name of names) if (row[name] !== undefined && row[name] !== '') return row[name];
+    return '';
+  }
+
+  function importIdentity(entry) {
+    return [entry.mediaType, entry.title.trim().toLowerCase(), entry.mediaType === 'tv' ? entry.season : '', entry.year].join('|');
+  }
+
+  async function fetchJson(url, label) {
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    if (!response.ok) throw new Error(`${label} failed (${response.status})`);
+    return response.json();
+  }
+
+  function bestTvmazeMatch(results, title) {
+    const normalized = title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    return results.find(result => String(result.show?.name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() === normalized)?.show || results[0]?.show || null;
+  }
+
+  async function enrichImportedEntry(entry, mdblistKey, cache) {
+    let mdblistData = null;
+    if (entry.mediaType === 'tv') {
+      const showKey = entry.title.toLowerCase();
+      let show = cache.shows.get(showKey);
+      if (show === undefined) {
+        const results = await fetchJson(`${TVMAZE_BASE}/search/shows?q=${encodeURIComponent(entry.title)}`, 'TVmaze search');
+        show = bestTvmazeMatch(Array.isArray(results) ? results : [], entry.title);
+        cache.shows.set(showKey, show);
+      }
+      if (!show) throw new Error('No TVmaze match');
+      let seasons = cache.seasons.get(show.id);
+      if (!seasons) {
+        seasons = await fetchJson(`${TVMAZE_BASE}/shows/${show.id}/seasons`, 'TVmaze season lookup');
+        cache.seasons.set(show.id, seasons);
+      }
+      const season = (Array.isArray(seasons) ? seasons : []).find(item => Number(item.number) === entry.season);
+      if (!season) throw new Error(`Season ${entry.season} was not found on TVmaze`);
+      let episodes = cache.episodes.get(season.id);
+      if (!episodes) {
+        episodes = await fetchJson(`${TVMAZE_BASE}/seasons/${season.id}/episodes`, 'TVmaze episode lookup');
+        cache.episodes.set(season.id, episodes);
+      }
+      const regular = (Array.isArray(episodes) ? episodes : []).filter(episode => episode.number !== null);
+      const runtimes = regular.map(episode => Number(episode.runtime)).filter(runtime => Number.isFinite(runtime) && runtime > 0);
+      Object.assign(entry, {
+        tvmazeId: show.id, tvmazeSeasonId: season.id, title: show.name,
+        network: getNetwork(show), genres: show.genres || [], episodeCount: regular.length || null,
+        episodesWatched: ['Completed', 'Recommended'].includes(entry.status) ? (regular.length || null) : null,
+        runtime: runtimes.length ? Math.round(runtimes.reduce((sum, runtime) => sum + runtime, 0) / runtimes.length) : (show.averageRuntime || show.runtime || null),
+        startDate: entry.startDate || season.premiereDate || '', imdb: show.externals?.imdb || '', tvdb: String(show.externals?.thetvdb || ''),
+        synopsis: plainSynopsis(show.summary), tvmazeUrl: show.url || '', image: show.image?.medium || ''
+      });
+    } else {
+      if (!mdblistKey) throw new Error('MDBList key is required for movie metadata');
+      const params = new URLSearchParams({ query: entry.title, apikey: mdblistKey });
+      const data = await fetchJson('https://api.mdblist.com/search/movie?' + params, 'MDBList movie search');
+      const candidates = movieSearchResults(data);
+      const title = entry.title.toLowerCase();
+      const releaseYear = Number(entry.startDate.slice(0, 4));
+      const movie = candidates.find(item => String(item.title || '').toLowerCase() === title && (!releaseYear || Number(item.year) === releaseYear)) ||
+        candidates.find(item => String(item.title || '').toLowerCase() === title) || candidates[0];
+      if (!movie) throw new Error('No MDBList movie match');
+      mdblistData = await fetchMovieDetails(movie, mdblistKey);
+      const ids = movieIds(mdblistData);
+      Object.assign(entry, {
+        title: movieResultValue(mdblistData, ['title', 'name']) || entry.title,
+        genres: movieGenres(mdblistData), runtime: nullableNumber(movieResultValue(mdblistData, ['runtime'])),
+        startDate: entry.startDate || movieReleaseDate(mdblistData), imdb: ids.imdb,
+        synopsis: movieResultValue(mdblistData, ['description', 'overview', 'plot', 'summary']) || '',
+        image: movieResultValue(mdblistData, ['poster', 'poster_url', 'image']) || ''
+      });
+    }
+    if (mdblistKey && /^tt\d+$/.test(entry.imdb)) {
+      mdblistData ||= await fetchJson(`https://api.mdblist.com/imdb/${entry.mediaType === 'movie' ? 'movie' : 'show'}/${encodeURIComponent(entry.imdb)}?${new URLSearchParams({ apikey: mdblistKey })}`, 'MDBList ratings lookup');
+      Object.assign(entry, {
+        externalRatings: parseMdblistRatings(mdblistData), ratingsUrls: parseMdblistUrls(mdblistData, entry.mediaType),
+        ratingsImdbId: entry.imdb, ratingsUpdatedAt: new Date().toISOString()
+      });
+    }
+    return normalizeEntry(entry);
+  }
+
+  async function importCsvLibrary(file) {
+    const rows = parseCsv(await file.text());
+    const fileYear = Number(file.name.match(/(?:^|\D)((?:19|20)\d{2})(?:\D|$)/)?.[1]);
+    const prepared = rows.map((row, index) => {
+      const title = repairImportedTitle(importValue(row, 'title', 'name'));
+      const seasonValue = importValue(row, 'season');
+      const explicitType = importValue(row, 'type', 'mediatype').toLowerCase();
+      const mediaType = explicitType === 'movie' || (!explicitType && !seasonValue) ? 'movie' : 'tv';
+      const startDate = importValue(row, 'start', 'premierdate', 'premieredate', 'startdate', 'releasedate');
+      const year = Number(importValue(row, 'archiveyear', 'year')) || fileYear || Number(startDate.slice(0, 4));
+      const statusInput = importValue(row, 'status');
+      const status = STATUS_OPTIONS.find(option => option.toLowerCase() === statusInput.toLowerCase()) || 'Completed';
+      const rating = normalizeRating(importValue(row, 'rating'));
+      if (!title) throw new Error(`Row ${index + 2} has no title.`);
+      if (!Number.isInteger(year)) throw new Error(`Row ${index + 2} needs an archive year or a year in the filename.`);
+      if (mediaType === 'tv' && (!Number.isInteger(Number(seasonValue)) || Number(seasonValue) < 1)) throw new Error(`Row ${index + 2} has an invalid season.`);
+      return normalizeEntry({ ...blankEntry(mediaType), id: makeId(), mediaType, title, season: mediaType === 'tv' ? Number(seasonValue) : null,
+        year, rating, status, startDate, watchedDate: importValue(row, 'watcheddate', 'finisheddate'), comments: importValue(row, 'comments', 'notes'),
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    });
+    const existingCounts = new Map();
+    (state.workingEntries || []).forEach(entry => existingCounts.set(importIdentity(entry), (existingCounts.get(importIdentity(entry)) || 0) + 1));
+    const incomingCounts = new Map(), toImport = [];
+    prepared.forEach(entry => {
+      const identity = importIdentity(entry);
+      const occurrence = (incomingCounts.get(identity) || 0) + 1;
+      incomingCounts.set(identity, occurrence);
+      if (occurrence > (existingCounts.get(identity) || 0)) toImport.push(entry);
+    });
+    const skipped = prepared.length - toImport.length;
+    if (!confirm(`Import ${toImport.length} new row${toImport.length === 1 ? '' : 's'} from ${file.name}? ${skipped} existing occurrence${skipped === 1 ? '' : 's'} will be skipped. Repeated rows beyond the existing count will be kept.`)) return;
+    let mdblistKey = '';
+    try { mdblistKey = localStorage.getItem(MDBLIST_KEY_STORAGE) || ''; } catch {}
+    const cache = { shows: new Map(), seasons: new Map(), episodes: new Map() };
+    const imported = [], failures = [];
+    for (let index = 0; index < toImport.length; index++) {
+      const entry = toImport[index];
+      el.publishedStatus.textContent = `Importing ${index + 1} of ${toImport.length}: ${entry.title}`;
+      try { imported.push(await enrichImportedEntry(entry, mdblistKey, cache)); }
+      catch (error) { console.warn(`CSV import: ${entry.title}`, error); failures.push(`${entry.title}${entry.mediaType === 'tv' ? ` S${entry.season}` : ''}: ${error.message}`); imported.push(normalizeEntry(entry)); }
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+    state.workingEntries.push(...imported);
+    saveWorkingLibrary();
+    refreshEverything();
+    el.publishedStatus.textContent = failures.length ? `${imported.length} imported · ${failures.length} need review` : `${imported.length} CSV rows imported`;
+    if (failures.length) console.warn('CSV rows needing manual review:\n' + failures.join('\n'));
+    showToast(`${imported.length} rows imported${failures.length ? `; ${failures.length} need manual review` : ' with metadata and ratings'}.`);
+  }
+
   async function importWorkingLibrary(event) {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
     try {
+      if (file.name.toLowerCase().endsWith('.csv') || file.type === 'text/csv') return await importCsvLibrary(file);
       const data = JSON.parse(await file.text());
       const rawEntries = Array.isArray(data) ? data : data.entries;
       if (!Array.isArray(rawEntries)) throw new Error('No entries array found');
@@ -1016,6 +1378,8 @@
   }
 
   function resetDialog() {
+    state.selectedMovie = null;
+    el.saveEntryBtn.disabled = false;
     state.searchToken++;
     state.editingId = null;
     state.selectedShow = null;

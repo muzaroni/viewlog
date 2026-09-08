@@ -26,8 +26,8 @@
       <div class="header-actions" id="editActions" hidden>
         <button id="addShowBtn" class="button button-primary" type="button">+ Add title</button>
         <button id="publishExportBtn" class="button" type="button">Export shows.json</button>
-        <label class="button file-button" for="importFile">Import JSON</label>
-        <input id="importFile" type="file" accept="application/json,.json" hidden />
+        <label class="button file-button" for="importFile">Import CSV / JSON</label>
+        <input id="importFile" type="file" accept="application/json,text/csv,.json,.csv" hidden />
         <button id="resetWorkingBtn" class="button" type="button">Reset from published</button>
         <button id="mdblistSettingsBtn" class="button" type="button">MDBList key</button>
         <button id="publicModeBtn" class="button" type="button">Exit editor</button>
@@ -172,7 +172,7 @@
   <dialog id="mdblistDialog" class="dialog dialog-small">
     <form id="mdblistForm" class="dialog-body">
       <h2>MDBList ratings</h2>
-      <p class="helper">Your key stays in this browser and is never included in exported catalogs. Only Fetch or Refresh ratings sends a MDBList request.</p>
+      <p class="helper">Your key stays in this browser and is never included in exported catalogs. Movie search and selection, Fetch ratings, and Refresh ratings use MDBList.</p>
       <label class="field"><span>API key</span><input id="mdblistKey" type="password" autocomplete="off" spellcheck="false" /></label>
       <p class="helper">Save a title with its IMDb ID first, then use Fetch in its Ratings column. TV scores are for the overall series, not individual seasons.</p>
       <p id="mdblistSettingsMessage" class="helper" role="status"></p>
@@ -190,18 +190,18 @@
       <div id="searchStep" class="dialog-body">
         <div class="media-choice" role="group" aria-label="Content type">
           <button id="chooseTvBtn" class="choice-card" type="button"><strong>TV season</strong><span>Search TVmaze and fill the season details automatically.</span></button>
-          <button id="chooseMovieBtn" class="choice-card" type="button"><strong>Movie</strong><span>Add a film to the selected year with its runtime, rating and notes.</span></button>
+          <button id="chooseMovieBtn" class="choice-card" type="button"><strong>Movie</strong><span>Search MDBList and fill the movie details automatically.</span></button>
         </div>
 
         <div id="tvSearchArea" hidden>
           <label class="field field-block">
-            <span>TV show name</span>
+            <span id="searchLabel">TV show name</span>
             <div class="search-row">
               <input id="showSearchInput" type="search" placeholder="e.g. The Bear" autocomplete="off" />
               <button id="showSearchBtn" class="button button-primary" type="button">Search</button>
             </div>
           </label>
-          <p class="helper">TV search uses TVmaze. You can still enter a TV season manually if needed.</p>
+          <p id="searchHelper" class="helper">TV search uses TVmaze. You can still enter a TV season manually if needed.</p>
           <div id="searchMessage" class="message" hidden></div>
           <div id="searchResults" class="search-results" aria-live="polite"></div>
           <button id="manualEntryBtn" class="text-button" type="button">Enter this TV season manually</button>

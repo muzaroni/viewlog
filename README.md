@@ -71,7 +71,7 @@ Choose **TV season** when adding a title. TVmaze search can automatically fill a
 
 ### Movies
 
-Choose **Movie** to add a film. Movie entries currently use manual metadata entry so the site can remain static and require no private movie-database API key.
+Choose **Movie** to search MDBList and pre-fill the movie metadata. This uses the same MDBList key saved in editor mode. Manual entry remains available if a result is missing or you do not want to use the lookup.
 
 For movies you can enter:
 
@@ -156,20 +156,29 @@ Your local editing copy is browser-specific. You have two easy options:
 - If the latest version is already published, open `?edit=1` on the new computer and choose **Reset from published**.
 - If you have unpublished work, export `shows.json`, move that file to the other computer, and use **Import JSON** in editor mode.
 
+## Bulk CSV import
+
+In editor mode, choose **Import CSV / JSON** to append a CSV watch history. Supported columns are `Title`, `Season`, `Rating`, `Status`, and `Start` (premiere date). `Type`, `Archive Year`, `Watched Date`, and `Comments` are optional. A numbered season is treated as TV; a blank season is treated as a movie unless `Type` is supplied. If `Archive Year` is missing, Viewlog uses a four-digit year in the filename (for example, `2026.csv`), then falls back to the premiere year.
+
+TV rows are enriched from TVmaze and movie rows from MDBList. When an IMDb ID and MDBList key are available, external ratings are fetched during import. Existing occurrences are skipped by title, season, type, and archive year; additional repeated rows in the CSV are preserved. Rows that cannot be matched are still imported using the supplied fields and counted as needing review.
+
 ## Data source
 
 TV-show metadata is provided by [TVmaze](https://www.tvmaze.com/) through its public API.
 
 ## External ratings (MDBList)
 In editor mode, use **MDBList key** to save your activated key in this browser.
-After saving a title with its IMDb ID, click **Fetch ratings** in its Ratings
-column. **Refresh ratings** is manual; opening the page does not request scores.
+When you add a title with an IMDb ID, its ratings are fetched automatically.
+Use **Fetch ratings** for an existing title that has not been fetched, or **Refresh
+ratings** to update saved scores. Opening the page does not request scores.
 IMDb (yellow) is out of 10, RT (red) is a percentage, and MC (green) is out of 100.
 Unavailable scores display a dash. Hover the scores for the last fetch date.
 TV scores represent the overall series, not an individual season. A fetch updates
 working entries with the same IMDb ID using one request.
 Export and publish shows.json to share saved scores. The API key is stored
 separately and is never exported. Save an empty key to remove it from this browser.
+
+Movie search also uses this key to retrieve titles and pre-fill available metadata, including the IMDb ID, release date, genres, runtime and synopsis.
 
 Ratings badges link to their source pages. MDBList source URLs are saved in shows.json; if no URL is available, the badge opens a search. Existing scores remain until you manually refresh. Enter a MDBList key using the editor key settings; old OMDb keys are not reused.
 
