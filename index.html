@@ -66,15 +66,7 @@
         <article class="stat-card"><span>Top network</span><strong id="statNetwork">—</strong><small id="statNetworkDetail">No data yet</small></article>
       </div>
 
-      <div class="analytics-grid">
-        <article class="chart-card">
-          <div class="chart-card-heading"><h3>Genre share</h3><span>% of titles</span></div>
-          <div id="genreBars" class="bar-list"></div><p class="chart-note">Titles can have multiple genres, so percentages may total over 100%.</p>
-        </article>
-        <article class="chart-card">
-          <div class="chart-card-heading"><h3>Network share</h3><span>% of titles</span></div>
-          <div id="networkBars" class="bar-list"></div><p class="chart-note">Share of this year’s TV seasons and movies. Missing networks count as Unknown.</p>
-        </article>
+      <div class="analytics-grid overview-analytics-grid">
         <article class="chart-card">
           <div class="chart-card-heading"><h3>Status mix</h3><span>% of titles</span></div>
           <div id="statusBars" class="bar-list"></div>
@@ -83,19 +75,42 @@
           <div class="chart-card-heading"><h3>Rating trend</h3><span id="trendLabel">by month</span></div>
           <div id="ratingTrend" class="trend-wrap"></div>
         </article>
-      </div>
-      <div class="rating-insights-grid">
         <article class="chart-card">
           <div class="chart-card-heading"><h3>Rating distribution</h3><span>Your scores · 0–10</span></div>
           <div id="ratingDistribution" class="rating-histogram"></div>
           <p class="chart-note">Number of rated TV seasons and movies. Each bin includes decimals up to the next score (7 includes 7.0–7.9); 10 stands alone. Unrated titles are excluded.</p>
         </article>
-        <article class="chart-card">
-          <div class="chart-card-heading"><h3>Highest-rated networks</h3><span>Average score</span></div>
-          <div id="networkRatings" class="bar-list"></div>
-          <p class="chart-note">Minimum 3 rated titles per network in this year. Each TV season or movie counts once; titles without a network are excluded.</p>
-        </article>
       </div>
+
+      <section class="analytics-topic-section" aria-labelledby="genreAnalyticsHeading">
+        <div class="analytics-topic-heading"><div><p class="eyebrow">Taste profile</p><h3 id="genreAnalyticsHeading">Genre analytics</h3></div><p>What you watch most, and how highly you rate it.</p></div>
+        <div class="analytics-topic-grid genre-topic-grid">
+          <article class="chart-card">
+            <div class="chart-card-heading"><h3>Genre share</h3><span>% of titles</span></div>
+            <div id="genreBars" class="bar-list"></div><p class="chart-note">Titles can have multiple genres, so percentages may total over 100%. Select a genre to filter the library.</p>
+          </article>
+          <article class="chart-card genre-rating-card">
+            <div class="chart-card-heading"><h3>Frequency vs rating</h3><span>Top 12 genres</span></div>
+            <div id="genreRatings" class="genre-combo-chart"></div>
+            <p class="chart-note">Bars show title count; the line shows your average rating. Averages use only rated titles. Select any genre to filter the library.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="analytics-topic-section" aria-labelledby="networkAnalyticsHeading">
+        <div class="analytics-topic-heading"><div><p class="eyebrow">Source profile</p><h3 id="networkAnalyticsHeading">Network analytics</h3></div><p>Where your titles come from and how those networks score.</p></div>
+        <div class="analytics-topic-grid network-topic-grid">
+          <article class="chart-card">
+            <div class="chart-card-heading"><h3>Network share</h3><span>% of titles</span></div>
+            <div id="networkBars" class="bar-list"></div><p class="chart-note">Share of this year’s TV seasons and movies. Missing networks count as Unknown. Select a network to filter the library.</p>
+          </article>
+          <article class="chart-card">
+            <div class="chart-card-heading"><h3>Highest-rated networks</h3><span>Average score</span></div>
+            <div id="networkRatings" class="bar-list"></div>
+            <p class="chart-note">Minimum 3 rated titles per network in this year. Each TV season or movie counts once; titles without a network are excluded.</p>
+          </article>
+        </div>
+      </section>
     </section>
 
     <div id="librarySection">
@@ -188,7 +203,7 @@
       </div>
 
       <div id="searchStep" class="dialog-body">
-        <div class="media-choice" role="group" aria-label="Content type">
+        <div id="mediaChoice" class="media-choice" role="group" aria-label="Content type">
           <button id="chooseTvBtn" class="choice-card" type="button"><strong>TV season</strong><span>Search TVmaze and fill the season details automatically.</span></button>
           <button id="chooseMovieBtn" class="choice-card" type="button"><strong>Movie</strong><span>Search MDBList and fill the movie details automatically.</span></button>
         </div>

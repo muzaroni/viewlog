@@ -4,7 +4,8 @@
   const WORKING_STORAGE_KEY = 'watch-archive.working.v3';
   const TVMAZE_BASE = 'https://api.tvmaze.com';
   const CURRENT_YEAR = new Date().getFullYear();
-  const STATUS_OPTIONS = ['Watching', 'Completed', 'Recommended', 'On Hold', 'Dropped', 'Trash'];
+  const STATUS_OPTIONS = ['Upcoming', 'Airing', 'Watching', 'Completed', 'Recommended', 'On Hold', 'Dropped', 'Trash'];
+  const DATE_MANAGED_STATUSES = new Set(['Upcoming', 'Airing']);
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const state = {
@@ -19,6 +20,8 @@
     selectedSeasons: [],
     selectedMovie: null,
     searchMediaType: 'tv',
+    fixMatchMode: false,
+    statusManuallySet: false,
     commentEntryId: null,
     searchToken: 0,
   };
@@ -26,9 +29,9 @@
   const el = Object.fromEntries([
     'mdblistSettingsBtn','mdblistDialog','mdblistForm','mdblistKey','mdblistCancel','mdblistSettingsMessage','yearTabs','yearSubtabs','libraryTab','dashboardTab','librarySection','editActions','publicModeBtn','modeBanner','publishedStatus','analyticsSection','analyticsTitle','analyticsSubtitle',
     'statTitles','statTitlesDetail','statHours','statHoursDetail','statRating','statRatingDetail','statGenres','statGenreDetail','statNetwork','statNetworkDetail',
-    'ratingDistribution','networkRatings','genreBars','networkBars','statusBars','ratingTrend','trendLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
+    'ratingDistribution','networkRatings','genreRatings','genreBars','networkBars','statusBars','ratingTrend','trendLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
     'searchFilter','typeFilter','statusFilter','networkFilter','genreFilter','visibleCount','showsBody','emptyState','emptyTitle','emptyText',
-    'showDialog','showForm','dialogEyebrow','dialogTitle','searchStep','detailsStep','chooseTvBtn','chooseMovieBtn','tvSearchArea','searchLabel','searchHelper','showSearchInput',
+    'showDialog','showForm','dialogEyebrow','dialogTitle','searchStep','detailsStep','mediaChoice','chooseTvBtn','chooseMovieBtn','tvSearchArea','searchLabel','searchHelper','showSearchInput',
     'showSearchBtn','searchMessage','searchResults','manualEntryBtn','selectedShowCard','entryMediaType','entryTitle','entrySeason','entryYear','entryRating',
     'entryStatus','entryNetwork','entryGenres','entryEpisodeCount','entryEpisodesWatched','entryRuntime','entryStartDate','entryWatchedDate','entryImdb','entryTvdb',
     'entrySynopsis','entryComments','seasonField','episodeCountField','episodesWatchedField','tvdbField','runtimeLabel','releaseDateLabel','metadataMessage','backToSearchBtn','saveEntryBtn',
@@ -103,10 +106,16 @@
       if (event.key === 'Enter') { event.preventDefault(); searchShows(); }
     });
     el.manualEntryBtn.addEventListener('click', () => state.searchMediaType === 'movie' ? openManualMovieDetails(el.showSearchInput.value.trim()) : openManualTvDetails(el.showSearchInput.value.trim()));
-    el.backToSearchBtn.addEventListener('click', showChoiceView);
+    el.backToSearchBtn.addEventListener('click', () => state.fixMatchMode ? showFixMatchSearch() : showChoiceView());
     el.entrySeason.addEventListener('change', loadSelectedSeasonMetadata);
+    el.entryStartDate.addEventListener('change', () => {
+      el.entryStatus.value = statusForPremiereDate(el.entryStartDate.value, el.entryStatus.value, !state.editingId && !state.statusManuallySet);
+    });
     el.entryMediaType.addEventListener('change', () => setFormType(el.entryMediaType.value));
-    el.entryStatus.addEventListener('change', autoFillCompletedEpisodes);
+    el.entryStatus.addEventListener('change', () => {
+      state.statusManuallySet = true;
+      autoFillCompletedEpisodes();
+    });
     el.showForm.addEventListener('submit', saveEntryFromForm);
     document.querySelectorAll('.close-dialog').forEach(button => button.addEventListener('click', () => el.showDialog.close()));
     document.querySelectorAll('.close-comments').forEach(button => button.addEventListener('click', () => el.commentsDialog.close()));
@@ -177,6 +186,8 @@
 
   function normalizeEntry(raw) {
     const mediaType = raw.mediaType === 'movie' ? 'movie' : 'tv';
+    const startDate = String(raw.startDate || '');
+    const savedStatus = STATUS_OPTIONS.includes(raw.status) ? raw.status : 'Watching';
     return {
       id: raw.id || makeId(),
       mediaType,
@@ -186,13 +197,13 @@
       season: mediaType === 'movie' ? null : (nullableNumber(raw.season) ?? 1),
       year: nullableNumber(raw.year) ?? CURRENT_YEAR,
       rating: normalizeRating(raw.rating),
-      status: STATUS_OPTIONS.includes(raw.status) ? raw.status : 'Watching',
+      status: statusForPremiereDate(startDate, savedStatus),
       network: String(raw.network || '').trim(),
       genres: Array.isArray(raw.genres) ? raw.genres.filter(Boolean).map(String) : splitGenres(raw.genres),
       episodeCount: mediaType === 'movie' ? null : nullableNumber(raw.episodeCount),
       episodesWatched: mediaType === 'movie' ? null : nullableNumber(raw.episodesWatched),
       runtime: nullableNumber(raw.runtime),
-      startDate: String(raw.startDate || ''),
+      startDate,
       watchedDate: String(raw.watchedDate || ''),
       imdb: cleanImdb(raw.imdb),
       tvdb: mediaType === 'movie' ? '' : (raw.tvdb ? String(raw.tvdb).trim() : ''),
@@ -302,11 +313,12 @@
     el.statNetwork.textContent = topNetwork?.[0] || '—';
     el.statNetworkDetail.textContent = topNetwork ? `${topNetwork[1]} title${topNetwork[1] === 1 ? '' : 's'}` : 'No network data';
 
-    renderBars(el.genreBars, sortedCounts(genreCounts), false, entries.length);
-    renderBars(el.networkBars, sortedCounts(networkCounts), false, entries.length);
+    renderBars(el.genreBars, sortedCounts(genreCounts), false, entries.length, 'genre');
+    renderBars(el.networkBars, sortedCounts(networkCounts), false, entries.length, 'network');
     renderBars(el.statusBars, STATUS_OPTIONS.map(status => [status, statusCounts[status] || 0]).filter(([, value]) => value > 0), true, entries.length);
     renderRatingTrend(entries);
     renderRatingInsights(entries);
+    renderGenreRatingComparison(entries);
   }
 
 
@@ -338,8 +350,55 @@
       return `<div class="histogram-bin" aria-label="${escapeAttr(label)}: ${value} titles"><span class="histogram-count">${value}</span><div class="histogram-track"><div class="histogram-fill" style="height:${value / max * 100}%;background:hsl(${index * 12} 65% 57%)"></div></div><span class="histogram-label">${index}</span></div>`;
     }).join('') : '<div class="empty-chart">Add ratings to see your rating distribution.</div>';
     el.networkRatings.innerHTML = ranked.length ? ranked.map((group, index) =>
-      `<div class="bar-row"><span class="bar-label" title="${escapeAttr(group.name)}">${escapeHTML(group.name)}</span><span class="bar-track"><span class="bar-fill chart-color-${index % 6}" style="width:${group.average * 10}%"></span></span><span class="bar-value"><strong>${group.average.toFixed(2)}<small>/ 10</small></strong><small>${group.count} titles</small></span></div>`
+      `<button class="bar-row dashboard-filter-row" type="button" data-dashboard-filter="network" data-filter-value="${escapeAttr(group.name)}" aria-label="Show ${escapeAttr(group.name)} titles in the library"><span class="bar-label" title="${escapeAttr(group.name)}">${escapeHTML(group.name)}</span><span class="bar-track"><span class="bar-fill chart-color-${index % 6}" style="width:${group.average * 10}%"></span></span><span class="bar-value"><strong>${group.average.toFixed(2)}<small>/ 10</small></strong><small>${group.count} titles</small></span></button>`
     ).join('') : '<div class="empty-chart">No networks qualify yet. Rate at least 3 titles from the same network.</div>';
+    bindDashboardFilters(el.networkRatings);
+  }
+
+  function renderGenreRatingComparison(entries) {
+    const groups = new Map();
+    entries.forEach(entry => {
+      [...new Set(entry.genres)].forEach(name => {
+        const group = groups.get(name) || { name, count: 0, ratedCount: 0, total: 0 };
+        group.count++;
+        if (entry.rating !== null) {
+          group.ratedCount++;
+          group.total += entry.rating;
+        }
+        groups.set(name, group);
+      });
+    });
+    const ranked = [...groups.values()].map(group => ({
+      ...group,
+      average: group.ratedCount ? group.total / group.ratedCount : null,
+    })).sort((a, b) => b.count - a.count || (b.average ?? -1) - (a.average ?? -1) || a.name.localeCompare(b.name)).slice(0, 12);
+    if (!ranked.length) {
+      el.genreRatings.innerHTML = '<div class="empty-chart">Add genres and ratings to compare them.</div>';
+      return;
+    }
+    const maxCount = Math.max(...ranked.map(group => group.count), 1);
+    const width = 920, height = 320;
+    const margin = { top: 36, right: 54, bottom: 92, left: 54 };
+    const plotWidth = width - margin.left - margin.right;
+    const plotHeight = height - margin.top - margin.bottom;
+    const step = plotWidth / ranked.length;
+    const barWidth = Math.min(42, step * .58);
+    const x = index => margin.left + step * index + step / 2;
+    const countY = value => margin.top + plotHeight - (value / maxCount) * plotHeight;
+    const ratingY = value => margin.top + plotHeight - (value / 10) * plotHeight;
+    const countTicks = [0, Math.ceil(maxCount / 2), maxCount];
+    const grid = countTicks.map(value => `<line class="combo-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${countY(value)}" y2="${countY(value)}"></line><text class="combo-axis-label" x="${margin.left - 9}" y="${countY(value) + 4}" text-anchor="end">${value}</text>`).join('');
+    const ratingTicks = [0, 5, 10].map(value => `<text class="combo-axis-label combo-rating-label" x="${width - margin.right + 9}" y="${ratingY(value) + 4}">${value}</text>`).join('');
+    const bars = ranked.map((group, index) => {
+      const barHeight = margin.top + plotHeight - countY(group.count);
+      const averageText = group.average === null ? 'not rated' : `${group.average.toFixed(2)} average from ${group.ratedCount} rated title${group.ratedCount === 1 ? '' : 's'}`;
+      return `<g class="combo-category" role="button" tabindex="0" data-dashboard-filter="genre" data-filter-value="${escapeAttr(group.name)}" aria-label="Show ${escapeAttr(group.name)} titles in the library: ${group.count} titles, ${escapeAttr(averageText)}"><rect class="combo-bar" x="${x(index) - barWidth / 2}" y="${countY(group.count)}" width="${barWidth}" height="${barHeight}"><title>${escapeHTML(group.name)}: ${group.count} titles</title></rect><text class="combo-count" x="${x(index)}" y="${countY(group.count) - 7}" text-anchor="middle">${group.count}</text><text class="combo-genre-label" transform="translate(${x(index) - 4} ${margin.top + plotHeight + 17}) rotate(38)">${escapeHTML(group.name)}</text></g>`;
+    }).join('');
+    const ratedPoints = ranked.map((group, index) => group.average === null ? null : ({ ...group, x: x(index), y: ratingY(group.average) })).filter(Boolean);
+    const line = ratedPoints.length > 1 ? `<polyline class="combo-rating-line" points="${ratedPoints.map(point => `${point.x},${point.y}`).join(' ')}"></polyline>` : '';
+    const dots = ratedPoints.map(point => `<circle class="combo-rating-dot" cx="${point.x}" cy="${point.y}" r="5"><title>${escapeHTML(point.name)}: ${point.average.toFixed(2)} average rating</title></circle>`).join('');
+    el.genreRatings.innerHTML = `<div class="combo-legend" aria-hidden="true"><span><i class="legend-bar"></i>Title count</span><span><i class="legend-line"></i>Average rating</span></div><svg class="genre-combo-svg" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="genreComboTitle genreComboDescription"><title id="genreComboTitle">Genre frequency and average rating</title><desc id="genreComboDescription">Bars compare the number of titles in the twelve most frequent genres. A line compares average personal rating on a zero to ten scale.</desc><text class="combo-axis-title" x="${margin.left}" y="17">Titles</text><text class="combo-axis-title combo-rating-title" x="${width - margin.right}" y="17" text-anchor="end">Rating / 10</text>${grid}${ratingTicks}${bars}${line}${dots}</svg>`;
+    bindDashboardFilters(el.genreRatings);
   }
 
   function watchedMinutes(entry) {
@@ -353,7 +412,7 @@
     return Math.max(0, Number(episodes) || 0) * entry.runtime;
   }
 
-  function renderBars(container, pairs, useStatusColors = false, total = 0) {
+  function renderBars(container, pairs, useStatusColors = false, total = 0, filterType = '') {
     if (!pairs.length) {
       container.innerHTML = '<div class="empty-chart">Not enough data yet.</div>';
       return;
@@ -361,8 +420,34 @@
     const max = total || 1;
     container.innerHTML = pairs.map(([label, value], index) => {
       const cls = useStatusColors ? ` ${statusClassName(label)}` : ` chart-color-${index % 6}`;
-      return `<div class="bar-row"><span class="bar-label" title="${escapeAttr(label)}">${escapeHTML(label)}</span><span class="bar-track"><span class="bar-fill${cls}" style="width:${Math.min(100, value / max * 100)}%"></span></span><span class="bar-value" title="${value} of ${total} titles"><strong>${(value / max * 100).toFixed(1)}%</strong><small>${value} titles</small></span></div>`;
+      const canFilter = filterType && !(filterType === 'network' && label === 'Unknown');
+      const tag = canFilter ? 'button' : 'div';
+      const attributes = canFilter ? ` type="button" data-dashboard-filter="${filterType}" data-filter-value="${escapeAttr(label)}" aria-label="Show ${escapeAttr(label)} titles in the library"` : '';
+      return `<${tag} class="bar-row${canFilter ? ' dashboard-filter-row' : ''}"${attributes}><span class="bar-label" title="${escapeAttr(label)}">${escapeHTML(label)}</span><span class="bar-track"><span class="bar-fill${cls}" style="width:${Math.min(100, value / max * 100)}%"></span></span><span class="bar-value" title="${value} of ${total} titles"><strong>${(value / max * 100).toFixed(1)}%</strong><small>${value} titles</small></span></${tag}>`;
     }).join('');
+    bindDashboardFilters(container);
+  }
+
+  function bindDashboardFilters(container) {
+    container.querySelectorAll('[data-dashboard-filter]').forEach(control => {
+      const apply = () => applyDashboardFilter(control.dataset.dashboardFilter, control.dataset.filterValue);
+      control.addEventListener('click', apply);
+      if (control.tagName.toLowerCase() !== 'button') control.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); apply(); }
+      });
+    });
+  }
+
+  function applyDashboardFilter(type, value) {
+    el.searchFilter.value = '';
+    el.typeFilter.value = '';
+    el.statusFilter.value = '';
+    el.networkFilter.value = type === 'network' ? value : '';
+    el.genreFilter.value = type === 'genre' ? value : '';
+    state.activeView = 'library';
+    renderTable();
+    updateYearView();
+    showToast(`Showing ${value} titles in ${state.activeYear}.`);
   }
 
   function renderRatingTrend(entries) {
@@ -456,7 +541,7 @@
       <td class="center ${!entry.startDate ? 'muted-cell' : ''}">${escapeHTML(formatDate(entry.startDate) || '—')}</td>
       <td class="center"><a class="icon-link" href="${escapeAttr(trailer)}" target="_blank" rel="noreferrer" title="Search YouTube for official trailer" aria-label="Search YouTube for official trailer"><img class="service-icon youtube-icon" src="assets/youtube.png" alt="" width="24" height="24" /></a></td>
       <td class="center"><button class="table-action comment-entry${noteClass}" type="button" title="${entry.comments.trim() ? 'View comments' : 'No comments'}">✎</button></td>
-      <td class="edit-only-column"><div class="action-group"><button class="table-action edit-entry" type="button" title="Edit">⋯</button><button class="table-action delete-action delete-entry" type="button" title="Delete">×</button></div></td>
+      <td class="edit-only-column"><div class="action-group"><button class="table-action fix-match" type="button" title="Fix metadata match" aria-label="Fix metadata match for ${escapeAttr(entry.title)}">Fix</button><button class="table-action edit-entry" type="button" title="Edit">⋯</button><button class="table-action delete-action delete-entry" type="button" title="Delete">×</button></div></td>
     </tr>`;
   }
 
@@ -473,6 +558,7 @@
       row.querySelector('.comment-entry')?.addEventListener('click', () => openComments(id));
       if (state.mode !== 'edit') return;
       row.querySelector('.fetch-ratings')?.addEventListener('click', () => fetchExternalRatings(id));
+      row.querySelector('.fix-match')?.addEventListener('click', () => openFixMatchDialog(id));
       row.querySelectorAll('.edit-entry').forEach(button => button.addEventListener('click', () => openEditDialog(id)));
       row.querySelector('.delete-entry')?.addEventListener('click', () => deleteEntry(id));
       const ratingInput = row.querySelector('.rating-input');
@@ -684,8 +770,8 @@
   function updateInlineStatus(id, status) {
     const entry = findWorkingEntry(id);
     if (!entry || !STATUS_OPTIONS.includes(status)) return;
-    entry.status = status;
-    if (entry.mediaType === 'tv' && ['Completed','Recommended'].includes(status) && entry.episodesWatched === null) entry.episodesWatched = entry.episodeCount;
+    entry.status = statusForPremiereDate(entry.startDate, status);
+    if (entry.mediaType === 'tv' && ['Completed','Recommended'].includes(entry.status) && entry.episodesWatched === null) entry.episodesWatched = entry.episodeCount;
     entry.updatedAt = new Date().toISOString();
     saveWorkingLibrary();
     refreshEverything();
@@ -708,6 +794,9 @@
     state.selectedShow = null;
     state.selectedSeasons = [];
     state.searchMediaType = 'tv';
+    state.fixMatchMode = false;
+    el.mediaChoice.hidden = false;
+    el.manualEntryBtn.hidden = false;
     el.searchStep.hidden = false;
     el.detailsStep.hidden = true;
     el.tvSearchArea.hidden = true;
@@ -722,8 +811,9 @@
     el.showSearchBtn.disabled = false;
     el.showSearchBtn.textContent = 'Search';
     state.searchMediaType = 'tv';
+    if (state.fixMatchMode) el.dialogTitle.textContent = 'Find the correct TV show';
     el.searchLabel.textContent = 'TV show name';
-    el.searchHelper.textContent = 'TV search uses TVmaze. You can still enter a TV season manually if needed.';
+    el.searchHelper.textContent = state.fixMatchMode ? 'Choose the correct TVmaze show. The entry will be converted to TV when saved.' : 'TV search uses TVmaze. You can still enter a TV season manually if needed.';
     el.manualEntryBtn.textContent = 'Enter this TV season manually';
     el.showSearchInput.placeholder = 'e.g. The Bear';
     el.tvSearchArea.hidden = false;
@@ -736,12 +826,62 @@
     el.showSearchBtn.disabled = false;
     el.showSearchBtn.textContent = 'Search';
     state.searchMediaType = 'movie';
+    if (state.fixMatchMode) el.dialogTitle.textContent = 'Find the correct movie';
     el.searchLabel.textContent = 'Movie title';
-    el.searchHelper.textContent = 'Movie search uses MDBList and your saved API key. You can still enter a movie manually.';
+    el.searchHelper.textContent = state.fixMatchMode ? 'Choose the correct MDBList movie. The entry will be converted to a movie when saved.' : 'Movie search uses MDBList and your saved API key. You can still enter a movie manually.';
     el.manualEntryBtn.textContent = 'Enter this movie manually';
     el.showSearchInput.placeholder = 'e.g. The Matrix';
     el.tvSearchArea.hidden = false;
     setTimeout(() => el.showSearchInput.focus(), 30);
+  }
+
+  function showFixMatchSearch() {
+    state.searchToken++;
+    state.selectedShow = null;
+    state.selectedMovie = null;
+    state.selectedSeasons = [];
+    el.searchStep.hidden = false;
+    el.detailsStep.hidden = true;
+    el.mediaChoice.hidden = false;
+    el.tvSearchArea.hidden = false;
+    hideMessage(el.metadataMessage);
+    setTimeout(() => el.showSearchInput.focus(), 30);
+  }
+
+  function openFixMatchDialog(id) {
+    const entry = findWorkingEntry(id);
+    if (!entry || state.mode !== 'edit') return;
+    resetDialog();
+    state.editingId = id;
+    state.fixMatchMode = true;
+    state.searchMediaType = entry.mediaType;
+    el.dialogEyebrow.textContent = 'Fix match';
+    el.dialogTitle.textContent = `Find the correct ${entry.mediaType === 'movie' ? 'movie' : 'TV show'}`;
+    el.mediaChoice.hidden = false;
+    el.manualEntryBtn.hidden = true;
+    el.searchStep.hidden = false;
+    el.detailsStep.hidden = true;
+    el.tvSearchArea.hidden = false;
+    el.showSearchInput.value = entry.title;
+    if (entry.mediaType === 'movie') {
+      el.searchLabel.textContent = 'Movie title';
+      el.searchHelper.textContent = 'Choose the correct MDBList movie to replace its source metadata and ratings.';
+      el.showSearchInput.placeholder = 'e.g. The Matrix';
+    } else {
+      el.searchLabel.textContent = 'TV show name';
+      el.searchHelper.textContent = `Choose the correct TVmaze show. Season ${entry.season} will be selected when available.`;
+      el.showSearchInput.placeholder = 'e.g. The Bear';
+    }
+    el.showDialog.showModal();
+    if (entry.mediaType === 'movie') {
+      let key = '';
+      try { key = localStorage.getItem(MDBLIST_KEY_STORAGE) || ''; } catch {}
+      if (!key) {
+        showMessage(el.searchMessage, 'Choose TV season to search TVmaze, or add an MDBList key to search for a movie.');
+        return;
+      }
+    }
+    void searchShows();
   }
 
   function openMovieDetails() {
@@ -811,6 +951,17 @@
     } finally {
       if (token === state.searchToken) { el.showSearchBtn.disabled = false; el.showSearchBtn.textContent = 'Search'; }
     }
+  }
+
+  function localDateISO(date = new Date()) {
+    const pad = value => String(value).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  }
+
+  function statusForPremiereDate(startDate, currentStatus = 'Watching', initialize = false) {
+    const canUpdate = DATE_MANAGED_STATUSES.has(currentStatus) || (initialize && currentStatus === 'Watching');
+    if (!canUpdate || !/^\d{4}-\d{2}-\d{2}$/.test(startDate || '')) return currentStatus;
+    return startDate > localDateISO() ? 'Upcoming' : 'Airing';
   }
 
   function movieResultValue(movie, keys) {
@@ -942,8 +1093,10 @@
     el.saveEntryBtn.disabled = false;
     const title = String(movieResultValue(fullMovie, ['title', 'name']) || movieResultValue(movie, ['title', 'name']) || '');
     const ids = movieIds(fullMovie);
-    const entry = blankEntry('movie');
+    const existing = state.fixMatchMode && state.editingId ? findWorkingEntry(state.editingId) : null;
+    const entry = existing ? { ...existing } : blankEntry('movie');
     Object.assign(entry, {
+      mediaType: 'movie', season: null, tvmazeId: null, tvmazeSeasonId: null, tvmazeUrl: '', tvdb: '',
       title,
       genres: movieGenres(fullMovie),
       runtime: nullableNumber(movieResultValue(fullMovie, ['runtime'])),
@@ -962,7 +1115,7 @@
       });
       state.selectedMovie = entry;
     }
-    fillForm(entry, true);
+    fillForm(entry, !existing);
     setFormType('movie');
     if (detailError) showMessage(el.metadataMessage, detailError, 'error');
   }
@@ -974,12 +1127,14 @@
     el.detailsStep.hidden = false;
     el.dialogTitle.textContent = 'Choose a season';
     showSelectedShow(show);
-    const entry = blankEntry('tv');
+    const existing = state.fixMatchMode && state.editingId ? findWorkingEntry(state.editingId) : null;
+    const entry = existing ? { ...existing } : blankEntry('tv');
     Object.assign(entry, {
+      mediaType: 'tv', season: existing?.mediaType === 'tv' ? existing.season : 1,
       synopsis: plainSynopsis(show.summary), title: show.name, network: getNetwork(show), genres: show.genres || [], runtime: show.averageRuntime ?? show.runtime ?? null,
       imdb: show.externals?.imdb || '', tvdb: show.externals?.thetvdb || ''
     });
-    fillForm(entry, true);
+    fillForm(entry, !existing);
     setFormType('tv');
     showMessage(el.metadataMessage, 'Loading seasons from TVmaze…');
     try {
@@ -992,7 +1147,7 @@
         return;
       }
       el.entrySeason.innerHTML = state.selectedSeasons.map(season => `<option value="${escapeAttr(season.number)}">Season ${escapeHTML(season.number)}${season.premiereDate ? ` — ${escapeHTML(season.premiereDate.slice(0,4))}` : ''}</option>`).join('');
-      const preferred = choosePreferredSeason(state.selectedSeasons, Number(el.entryYear.value));
+      const preferred = state.fixMatchMode ? state.selectedSeasons.find(season => Number(season.number) === Number(entry.season)) : choosePreferredSeason(state.selectedSeasons, Number(el.entryYear.value));
       if (preferred) el.entrySeason.value = String(preferred.number);
       await loadSelectedSeasonMetadata();
     } catch (error) {
@@ -1012,6 +1167,7 @@
     const season = state.selectedSeasons.find(item => Number(item.number) === number);
     if (!season) return;
     el.entryStartDate.value = season.premiereDate || '';
+    el.entryStatus.value = statusForPremiereDate(el.entryStartDate.value, el.entryStatus.value, !state.editingId && !state.statusManuallySet);
     showMessage(el.metadataMessage, `Loading Season ${number} episodes…`);
     try {
       const response = await fetch(`${TVMAZE_BASE}/seasons/${season.id}/episodes`);
@@ -1046,13 +1202,14 @@
   }
 
   function fillForm(entry, isNew) {
+    state.statusManuallySet = false;
     el.entryMediaType.value = entry.mediaType || 'tv';
     el.entryYear.value = entry.year || CURRENT_YEAR;
     el.entryTitle.value = entry.title || '';
     populateSeasonOptions(entry.season || 1);
     el.entrySeason.value = String(entry.season || 1);
     el.entryRating.value = entry.rating ?? '';
-    el.entryStatus.value = entry.status || 'Watching';
+    el.entryStatus.value = statusForPremiereDate(entry.startDate, entry.status || 'Watching', isNew);
     el.entryNetwork.value = entry.network || '';
     el.entryGenres.value = (entry.genres || []).join(', ');
     el.entryEpisodeCount.value = entry.episodeCount ?? '';
@@ -1150,7 +1307,7 @@
     el.showDialog.close();
     refreshEverything();
     showToast(existing ? 'Local entry updated.' : 'Title added to your local working copy.');
-    if (!existing && /^tt\d+$/.test(entry.imdb) && entry.ratingsImdbId !== entry.imdb) {
+    if (/^tt\d+$/.test(entry.imdb) && entry.ratingsImdbId !== entry.imdb) {
       let mdblistKey;
       try { mdblistKey = localStorage.getItem(MDBLIST_KEY_STORAGE); } catch {}
       if (mdblistKey) void fetchExternalRatings(entry.id);
@@ -1379,7 +1536,11 @@
 
   function resetDialog() {
     state.selectedMovie = null;
+    state.fixMatchMode = false;
+    state.statusManuallySet = false;
     el.saveEntryBtn.disabled = false;
+    el.mediaChoice.hidden = false;
+    el.manualEntryBtn.hidden = false;
     state.searchToken++;
     state.editingId = null;
     state.selectedShow = null;

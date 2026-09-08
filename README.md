@@ -91,12 +91,16 @@ For movies you can enter:
 
 The requested status colors are built in:
 
+- **Upcoming** — orange; assigned automatically when the premiere date is after today
+- **Airing** — teal; assigned to a newly matched title when its premiere date is today or earlier and you have not marked it as Watching
 - **Completed** — green
 - **Watching** — blue
 - **Recommended** — purple
 - **On Hold** — yellow
 - **Dropped** — red
 - **Trash** — grey
+
+The premiere-date rule only transitions Upcoming and Airing entries. Watching is a deliberate personal status and is never replaced by the date check. Completed, Recommended, On Hold, Dropped and Trash are also retained.
 
 ## Year analytics
 
@@ -113,7 +117,11 @@ It currently shows:
 - top genres;
 - network/service distribution;
 - status distribution;
-- monthly rating trend.
+- monthly rating trend;
+- a combined genre chart with frequency bars and an average-rating line.
+
+Genre and network rows on the dashboard are interactive. Select one to return to the library with that genre or network applied as the active filter; the selected year is preserved.
+Related charts are grouped into dedicated Genre analytics and Network analytics sections.
 
 ### How hours watched are calculated
 
@@ -179,6 +187,8 @@ Export and publish shows.json to share saved scores. The API key is stored
 separately and is never exported. Save an empty key to remove it from this browser.
 
 Movie search also uses this key to retrieve titles and pre-fill available metadata, including the IMDb ID, release date, genres, runtime and synopsis.
+
+In editor mode, use the **Fix metadata match** action on an existing row to search again and choose the correct TVmaze show or MDBList movie. You can switch between TV and Movie during this search, which also corrects an entry's media type. Fixing a match replaces source metadata and refreshes external ratings while retaining your archive year, personal rating, status, watched date and comments.
 
 Ratings badges link to their source pages. MDBList source URLs are saved in shows.json; if no URL is available, the badge opens a search. Existing scores remain until you manually refresh. Enter a MDBList key using the editor key settings; old OMDb keys are not reused.
 
