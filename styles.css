@@ -161,15 +161,15 @@ td.title-cell { font-weight: 650; color: white; }
 .action-group, .link-group { display: flex; align-items: center; justify-content: center; gap: 3px; }
 .link-group { justify-content: flex-start; }
 .text-link { font-size: 13px; color: #169cf0; text-decoration: underline; text-underline-offset: 2px; }
-.col-title { width: 250px; }
+.col-title { width: 300px; }
 .col-season { width: 46px; text-align: center; }
 .col-rating { width: 68px; }
-.col-network { width: 142px; }
-.col-status { width: 150px; }
+.col-network { width: 120px; }
+.col-status { width: 120px; }
 .col-genre { width: 250px; }
-.col-episodes { width: 88px; text-align: right; }
-.col-runtime { width: 90px; text-align: right; }
-.col-start { width: 112px; }
+.col-episodes { width: 60px; text-align: right; }
+.col-runtime { width: 60px; text-align: right; }
+.col-start { width: 95px; }
 .col-link { width: 70px; text-align: center; }
 .col-note { width: 52px; text-align: center; }
 .col-actions { width: 62px; }
@@ -298,7 +298,7 @@ select option, select optgroup { background: #15181b; color: #f4f7f9; }
 
 .synopsis-tooltip { position: fixed; z-index: 200; width: min(360px, calc(100vw - 16px)); max-height: 220px; overflow-y: auto; padding: 13px 15px; border: 1px solid #454b52; border-top: 2px solid var(--accent); border-radius: 8px; background: #191d22; color: #e0e6ec; font-size: 14px; line-height: 1.6; box-shadow: 0 8px 28px rgba(0,0,0,.5); }
 
-.col-external-ratings { width: 210px; text-align: center; }
+.col-external-ratings { width: 160px; text-align: center; }
 .external-ratings-cell { padding: 6px; text-align: center; }
 .external-ratings { display: flex; justify-content: center; gap: 5px; }
 .external-score { display: inline-flex; gap: 4px; align-items: center; padding: 4px 5px; border: 1px solid currentColor; border-radius: 4px; font-size: 11px; font-variant-numeric: tabular-nums; }
