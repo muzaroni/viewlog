@@ -1,7 +1,7 @@
 {
   "app": "Viewlog",
   "version": 3,
-  "publishedAt": "2026-09-08T07:42:15.402Z",
+  "publishedAt": "2026-09-08T08:05:17.513Z",
   "entries": [
     {
       "id": "6e29a09f-0d2e-4912-b191-6ca1deb12839",
@@ -422,6 +422,90 @@
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521070.jpg",
       "createdAt": "2026-09-08T07:35:39.675Z",
       "updatedAt": "2026-09-08T07:35:39.675Z"
+    },
+    {
+      "id": "ec269c86-ce23-41b2-8888-62db3eca1428",
+      "mediaType": "tv",
+      "tvmazeId": 56512,
+      "tvmazeSeasonId": 175877,
+      "title": "The Night Agent",
+      "season": 3,
+      "year": 2026,
+      "rating": null,
+      "status": "Recommended",
+      "network": "Netflix",
+      "genres": [
+        "Action",
+        "Thriller",
+        "Mystery"
+      ],
+      "episodeCount": 10,
+      "episodesWatched": 10,
+      "runtime": 52,
+      "startDate": "2026-02-19",
+      "watchedDate": "",
+      "imdb": "tt13918776",
+      "tvdb": "407281",
+      "externalRatings": {
+        "imdb": 7.4,
+        "rt": 82,
+        "mc": 69,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-08T07:57:55.522Z",
+      "ratingsImdbId": "tt13918776",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/the_night_agent",
+        "mc": "https://www.metacritic.com/tv/the-night-agent",
+        "mal": ""
+      },
+      "synopsis": "The Night Agent is a sophisticated, character-based, action-thriller centering on a low-level FBI Agent who works in the basement of the White House, manning a phone that never rings — until the night that it does, propelling him into a fast-moving and dangerous conspiracy that ultimately leads all the way to the Oval Office.",
+      "comments": "",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/56512/the-night-agent",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/614/1536331.jpg",
+      "createdAt": "2026-09-08T07:57:32.911Z",
+      "updatedAt": "2026-09-08T07:57:32.911Z"
+    },
+    {
+      "id": "e10051d4-5a39-4a3f-b35e-15d763da1c1e",
+      "mediaType": "tv",
+      "tvmazeId": 89995,
+      "tvmazeSeasonId": 197005,
+      "title": "Bait",
+      "season": 1,
+      "year": 2026,
+      "rating": 9.1,
+      "status": "Completed",
+      "network": "Prime Video",
+      "genres": [
+        "Comedy"
+      ],
+      "episodeCount": 6,
+      "episodesWatched": 6,
+      "runtime": 26,
+      "startDate": "2026-03-25",
+      "watchedDate": "",
+      "imdb": "tt32252887",
+      "tvdb": "455830",
+      "externalRatings": {
+        "imdb": null,
+        "rt": null,
+        "mc": null,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "",
+      "ratingsImdbId": "",
+      "ratingsUrls": {
+        "rt": "",
+        "mc": "",
+        "mal": ""
+      },
+      "synopsis": "Bait is about a struggling actor, whose last chance to hit it big comes in the form of an audition of a lifetime. The series follows him over the course of four wild days as his life spirals out of control and his family, ex-lover and the entire world weigh in on whether he is the right man for the job.",
+      "comments": "Really well done for a first tv show from Riz Ahmed. Takes on a lot of heavy issues such a racism and fitting into stereotypes but done with serious tact and sprinkled with comedy. I will definitely check out S2 if it gets picked up.",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/89995/bait",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/619/1548335.jpg",
+      "createdAt": "2026-09-08T08:05:05.485Z",
+      "updatedAt": "2026-09-08T08:05:12.157Z"
     }
   ]
 }
