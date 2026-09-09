@@ -29,7 +29,7 @@
   const el = Object.fromEntries([
     'mdblistSettingsBtn','mdblistDialog','mdblistForm','mdblistKey','mdblistCancel','mdblistSettingsMessage','yearTabs','yearSubtabs','libraryTab','dashboardTab','librarySection','editActions','publicModeBtn','modeBanner','publishedStatus','analyticsSection','analyticsTitle','analyticsSubtitle',
     'statTitles','statTitlesDetail','statHours','statHoursDetail','statRating','statRatingDetail','statGenres','statGenreDetail','statNetwork','statNetworkDetail',
-    'ratingDistribution','networkRatings','genreRatings','genreBars','networkBars','statusBars','ratingTrend','trendLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
+    'ratingDistribution','networkRatings','genreRatings','genreBars','networkBars','statusBars','premiereByMonth','premiereChartLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
     'searchFilter','typeFilter','statusFilter','networkFilter','genreFilter','visibleCount','showsBody','emptyState','emptyTitle','emptyText',
     'showDialog','showForm','dialogEyebrow','dialogTitle','dialogExternalRatings','searchStep','detailsStep','mediaChoice','chooseTvBtn','chooseMovieBtn','tvSearchArea','searchLabel','searchHelper','showSearchInput',
     'showSearchBtn','searchMessage','searchResults','manualEntryBtn','selectedShowCard','entryMediaType','entryTitle','entrySeason','entryYear','entryRating',
@@ -320,7 +320,7 @@
     renderBars(el.genreBars, sortedCounts(genreCounts), false, entries.length, 'genre');
     renderBars(el.networkBars, sortedCounts(networkCounts), false, entries.length, 'network');
     renderBars(el.statusBars, STATUS_OPTIONS.map(status => [status, statusCounts[status] || 0]).filter(([, value]) => value > 0), true, entries.length);
-    renderRatingTrend(entries);
+    renderPremieresByMonth(entries);
     renderRatingInsights(entries);
     renderGenreRatingComparison(entries);
   }
@@ -454,28 +454,33 @@
     showToast(`Showing ${value} titles in ${state.activeYear}.`);
   }
 
-  function renderRatingTrend(entries) {
-    const buckets = Array.from({ length: 12 }, () => []);
+  function renderPremieresByMonth(entries) {
+    const counts = Array(12).fill(0);
     entries.forEach(entry => {
-      if (entry.rating === null) return;
-      const date = entry.watchedDate || entry.startDate;
+      const date = entry.startDate;
       const month = date ? Number(date.slice(5, 7)) - 1 : -1;
-      if (month >= 0 && month < 12) buckets[month].push(entry.rating);
+      if (month >= 0 && month < 12) counts[month]++;
     });
-    const points = buckets.map((values, month) => ({ month, value: values.length ? values.reduce((a, b) => a + b, 0) / values.length : null })).filter(point => point.value !== null);
-    el.trendLabel.textContent = 'watch date · release fallback';
-    if (!points.length) {
-      el.ratingTrend.innerHTML = '<div class="empty-chart">Add ratings and watch/release dates to see a trend.</div>';
+    el.premiereChartLabel.textContent = 'season starts & movie releases';
+    if (!counts.some(Boolean)) {
+      el.premiereByMonth.innerHTML = '<div class="empty-chart">Add season-start or movie-release dates to see monthly premieres.</div>';
       return;
     }
-    const width = 320, height = 115, left = 15, right = 8, top = 10, bottom = 20;
-    const x = month => left + (month / 11) * (width - left - right);
-    const y = value => top + ((10 - value) / 10) * (height - top - bottom);
-    const linePoints = points.map(point => `${x(point.month).toFixed(1)},${y(point.value).toFixed(1)}`).join(' ');
-    const monthLabels = [0, 2, 4, 6, 8, 10].map(month => `<text class="trend-label" x="${x(month)}" y="${height - 3}" text-anchor="middle">${MONTHS[month]}</text>`).join('');
-    const grid = [0, 5, 10].map(value => `<line class="trend-grid" x1="${left}" x2="${width-right}" y1="${y(value)}" y2="${y(value)}"></line><text class="trend-score" x="${left + 1}" y="${Math.max(8, y(value)-2)}">${value}</text>`).join('');
-    const dots = points.map(point => `<circle class="trend-dot" cx="${x(point.month)}" cy="${y(point.value)}" r="3"><title>${MONTHS[point.month]}: ${point.value.toFixed(1)}</title></circle>`).join('');
-    el.ratingTrend.innerHTML = `<svg class="trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Average rating trend by month">${grid}<polyline class="trend-line" points="${linePoints}"></polyline>${dots}${monthLabels}</svg>`;
+    const max = Math.max(...counts, 1);
+    const width = 480, height = 180, left = 30, right = 8, top = 22, bottom = 30;
+    const plotWidth = width - left - right;
+    const plotHeight = height - top - bottom;
+    const step = plotWidth / 12;
+    const barWidth = Math.min(28, step * .72);
+    const y = value => top + plotHeight - (value / max) * plotHeight;
+    const ticks = [...new Set([0, Math.ceil(max / 2), max])];
+    const grid = ticks.map(value => `<line class="trend-grid" x1="${left}" x2="${width - right}" y1="${y(value)}" y2="${y(value)}"></line><text class="trend-score" x="${left - 5}" y="${y(value) + 3}" text-anchor="end">${value}</text>`).join('');
+    const bars = counts.map((value, month) => {
+      const x = left + step * month + (step - barWidth) / 2;
+      const barHeight = value ? Math.max(2, top + plotHeight - y(value)) : 0;
+      return `<rect class="premiere-bar" x="${x.toFixed(1)}" y="${y(value).toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" rx="3"><title>${MONTHS[month]}: ${value} premiere${value === 1 ? '' : 's'}</title></rect><text class="trend-label" x="${(x + barWidth / 2).toFixed(1)}" y="${height - 7}" text-anchor="middle">${MONTHS[month]}</text>${value ? `<text class="premiere-count" x="${(x + barWidth / 2).toFixed(1)}" y="${Math.max(13, y(value) - 6).toFixed(1)}" text-anchor="middle">${value}</text>` : ''}`;
+    }).join('');
+    el.premiereByMonth.innerHTML = `<svg class="trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Number of TV seasons and movies premiered each month">${grid}${bars}</svg>`;
   }
 
   function getFilteredEntries() {

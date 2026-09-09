@@ -133,9 +133,9 @@ If a TV season is marked **Completed** or **Recommended** and you leave *Episode
 
 For a movie, its runtime counts as watched time (except entries marked Trash).
 
-### Rating trend
+### Premieres by month
 
-The monthly rating trend uses **Watched / finished date** when available. If that field is empty, the release/season-start date is used as a fallback.
+The monthly premiere chart counts TV-season start dates and movie release dates for each month in the selected archive year.
 
 ## First GitHub Pages setup
 

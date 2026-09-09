@@ -92,13 +92,16 @@ h1 { margin: 0; font-size: 30px; line-height: 1; letter-spacing: -.5px; }
 .bar-fill.status-dropped { background: var(--red); }
 .bar-fill.status-trash { background: var(--grey); }
 .empty-chart { padding: 30px 8px; color: var(--muted-2); text-align: center; font-size: 13px; }
-.trend-wrap { min-height: 135px; }
-.trend-svg { display: block; width: 100%; height: 122px; overflow: visible; }
+.trend-wrap { min-height: 180px; }
+.trend-svg { display: block; width: 100%; height: auto; min-height: 180px; overflow: visible; }
 .trend-grid { stroke: #242a2e; stroke-width: 1; }
 .trend-line { fill: none; stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .trend-dot { fill: var(--accent); }
-.trend-label { fill: #737c83; font-family: inherit; font-size: 10px; }
-.trend-score { fill: #cbd1d5; font-family: inherit; font-size: 10px; }
+.trend-label { fill: #8c959d; font-family: inherit; font-size: 11px; font-weight: 650; }
+.trend-score { fill: #cbd1d5; font-family: inherit; font-size: 11px; }
+.premiere-bar { fill: var(--accent); opacity: .78; }
+.premiere-bar:hover { opacity: 1; }
+.premiere-count { fill: #eef2f5; font-family: inherit; font-size: 12px; font-weight: 800; }
 
 .toolbar { display: grid; grid-template-columns: minmax(260px, 1.7fr) repeat(4, minmax(130px, .72fr)) auto; gap: 8px; align-items: end; padding: 10px; background: var(--panel); border: 1px solid var(--border); border-bottom: 0; }
 .field { display: grid; gap: 4px; min-width: 0; }
