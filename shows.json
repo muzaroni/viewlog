@@ -1,7 +1,7 @@
 {
   "app": "Viewlog",
   "version": 3,
-  "publishedAt": "2026-09-09T07:54:53.220Z",
+  "publishedAt": "2026-09-09T16:55:58.733Z",
   "entries": [
     {
       "id": "6e29a09f-0d2e-4912-b191-6ca1deb12839",
@@ -12,7 +12,7 @@
       "title": "Widow's Bay",
       "season": 1,
       "year": 2026,
-      "rating": 9.7,
+      "rating": 9.8,
       "status": "Completed",
       "network": "Apple TV",
       "genres": [
@@ -44,7 +44,7 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/79390/widows-bay",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/623/1559488.jpg",
       "createdAt": "2026-09-08T04:46:28.596Z",
-      "updatedAt": "2026-09-08T16:44:11.761Z"
+      "updatedAt": "2026-09-09T15:42:16.857Z"
     },
     {
       "id": "3658a62b-f1f4-4d1c-982e-0d7b26e21f53",
@@ -98,7 +98,7 @@
       "title": "Silo",
       "season": 3,
       "year": 2026,
-      "rating": 7.4,
+      "rating": 6.2,
       "status": "Completed",
       "network": "Apple TV",
       "genres": [
@@ -107,7 +107,7 @@
         "Mystery"
       ],
       "episodeCount": 10,
-      "episodesWatched": null,
+      "episodesWatched": 10,
       "runtime": 54,
       "startDate": "2026-07-03",
       "watchedDate": "",
@@ -119,19 +119,19 @@
         "mc": 77,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-09T06:27:41.039Z",
+      "ratingsUpdatedAt": "2026-09-09T15:44:25.487Z",
       "ratingsImdbId": "tt14688458",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/silo",
         "mc": "https://www.metacritic.com/tv/silo",
         "mal": ""
       },
-      "synopsis": "",
-      "comments": "",
+      "synopsis": "Silo depicts a ruined and toxic future, when thousands of people live in a giant silo deep underground. After its sheriff breaks a cardinal rule and residents die mysteriously, engineer Juliette starts to uncover shocking secrets and the truth about the silo.",
+      "comments": "This show seriously has pacing issues. It's like the DBZ of scifi, 8 episodes of bullshit, 2 great episodes. I swear this show could be better if its cut down to 6 episodes, UK format. There's just too much unnecessary fluff. The hook is still great and that's literally all that keeps me watching.",
       "tvmazeUrl": "https://www.tvmaze.com/shows/38052/silo",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/631/1577677.jpg",
       "createdAt": "2026-09-08T04:48:24.574Z",
-      "updatedAt": "2026-09-08T04:48:28.634Z"
+      "updatedAt": "2026-09-09T15:44:33.858Z"
     },
     {
       "id": "e455daa4-bd5d-474d-817c-790a7a3ea626",
@@ -356,7 +356,7 @@
       "mediaType": "tv",
       "tvmazeId": 61739,
       "tvmazeSeasonId": 191111,
-      "seriesStatus": "returning",
+      "seriesStatus": "tbd",
       "title": "Hijack",
       "season": 2,
       "year": 2026,
@@ -391,7 +391,7 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/61739/hijack",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521070.jpg",
       "createdAt": "2026-09-08T07:35:39.675Z",
-      "updatedAt": "2026-09-08T15:40:45.467Z"
+      "updatedAt": "2026-09-09T15:44:42.190Z"
     },
     {
       "id": "ec269c86-ce23-41b2-8888-62db3eca1428",
@@ -1052,7 +1052,7 @@
       "title": "The Ghost in the Shell",
       "season": 1,
       "year": 2026,
-      "rating": 9.1,
+      "rating": 8.4,
       "status": "Watching",
       "network": "Crunchyroll",
       "genres": [
@@ -1085,7 +1085,7 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/90589/the-ghost-in-the-shell",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/615/1539490.jpg",
       "createdAt": "2026-09-08T19:38:09.102Z",
-      "updatedAt": "2026-09-08T21:50:20.899Z"
+      "updatedAt": "2026-09-09T15:42:34.360Z"
     },
     {
       "id": "43e73efd-ccdd-4ce0-8a44-627f7b4700be",
@@ -1833,7 +1833,7 @@
       "season": 1,
       "year": 2026,
       "rating": 7,
-      "status": "Airing",
+      "status": "On Hold",
       "network": "Netflix",
       "genres": [
         "Drama",
@@ -1866,7 +1866,7 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/88758/love-through-a-prism",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/608/1521708.jpg",
       "createdAt": "2026-09-08T19:38:09.103Z",
-      "updatedAt": "2026-09-08T19:38:09.103Z"
+      "updatedAt": "2026-09-09T15:35:44.225Z"
     },
     {
       "id": "b7f04ad6-6449-4bde-b08c-56c93af4abd5",
@@ -4633,7 +4633,7 @@
       "mediaType": "tv",
       "tvmazeId": 52341,
       "tvmazeSeasonId": 138941,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Andor",
       "season": 2,
       "year": 2025,
@@ -4658,7 +4658,7 @@
         "mc": 84,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:22.097Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:21.538Z",
       "ratingsImdbId": "tt9253284",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/andor",
@@ -4677,7 +4677,7 @@
       "mediaType": "tv",
       "tvmazeId": 69327,
       "tvmazeSeasonId": 153578,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Common Side Effects",
       "season": 1,
       "year": 2025,
@@ -4702,7 +4702,7 @@
         "mc": 80,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:23.051Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:23.974Z",
       "ratingsImdbId": "tt28093628",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/common_side_effects",
@@ -4721,7 +4721,7 @@
       "mediaType": "tv",
       "tvmazeId": 44933,
       "tvmazeSeasonId": 137329,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Severance",
       "season": 2,
       "year": 2025,
@@ -4746,7 +4746,7 @@
         "mc": 85,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:24.014Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:25.952Z",
       "ratingsImdbId": "tt11280740",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/severance",
@@ -4765,7 +4765,7 @@
       "mediaType": "tv",
       "tvmazeId": 78570,
       "tvmazeSeasonId": 172789,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Adolescence",
       "season": 1,
       "year": 2025,
@@ -4789,7 +4789,7 @@
         "mc": 91,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:24.988Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:26.825Z",
       "ratingsImdbId": "tt31806037",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/adolescence",
@@ -4808,7 +4808,7 @@
       "mediaType": "tv",
       "tvmazeId": 75605,
       "tvmazeSeasonId": 166159,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "The Studio",
       "season": 1,
       "year": 2025,
@@ -4831,7 +4831,7 @@
         "mc": 80,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:25.956Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:28.434Z",
       "ratingsImdbId": "tt23649128",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_studio",
@@ -4893,7 +4893,7 @@
       "mediaType": "tv",
       "tvmazeId": 56116,
       "tvmazeSeasonId": 144451,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "The Rehearsal",
       "season": 2,
       "year": 2025,
@@ -4916,7 +4916,7 @@
         "mc": 87,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:27.901Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:30.643Z",
       "ratingsImdbId": "tt10802170",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_rehearsal_2022",
@@ -4935,7 +4935,7 @@
       "mediaType": "tv",
       "tvmazeId": 86175,
       "tvmazeSeasonId": 189068,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Pluribus",
       "season": 1,
       "year": 2025,
@@ -4960,7 +4960,7 @@
         "mc": 87,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:28.861Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:33.746Z",
       "ratingsImdbId": "tt22202452",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/pluribus",
@@ -4984,7 +4984,7 @@
       "season": 2,
       "year": 2025,
       "rating": 9.2,
-      "status": "Airing",
+      "status": "Completed",
       "network": "Prime Video",
       "genres": [
         "Drama",
@@ -4992,7 +4992,7 @@
         "Science-Fiction"
       ],
       "episodeCount": 8,
-      "episodesWatched": null,
+      "episodesWatched": 8,
       "runtime": 55,
       "startDate": "2025-12-17",
       "watchedDate": "",
@@ -5016,14 +5016,14 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/49041/fallout",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/599/1499142.jpg",
       "createdAt": "2026-09-08T20:08:15.580Z",
-      "updatedAt": "2026-09-08T20:08:15.580Z"
+      "updatedAt": "2026-09-09T15:34:40.089Z"
     },
     {
       "id": "a1fbd830-be70-41b7-af5c-845144bb318b",
       "mediaType": "tv",
       "tvmazeId": 80725,
       "tvmazeSeasonId": 177159,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Task",
       "season": 1,
       "year": 2025,
@@ -5047,7 +5047,7 @@
         "mc": 77,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:30.288Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:34.623Z",
       "ratingsImdbId": "tt28013708",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/task",
@@ -5154,7 +5154,7 @@
       "mediaType": "tv",
       "tvmazeId": 68408,
       "tvmazeSeasonId": 151575,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Dept. Q",
       "season": 1,
       "year": 2025,
@@ -5179,7 +5179,7 @@
         "mc": 69,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:32.992Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:36.224Z",
       "ratingsImdbId": "tt27995114",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/dept_q",
@@ -5240,7 +5240,7 @@
       "mediaType": "tv",
       "tvmazeId": 46562,
       "tvmazeSeasonId": 148200,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "The Last of Us",
       "season": 2,
       "year": 2025,
@@ -5265,7 +5265,7 @@
         "mc": 83,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:18:30.647Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:38.413Z",
       "ratingsImdbId": "tt3581920",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_last_of_us",
@@ -5284,7 +5284,7 @@
       "mediaType": "tv",
       "tvmazeId": 82595,
       "tvmazeSeasonId": 181700,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Everybody's Live with John Mulaney",
       "season": 1,
       "year": 2025,
@@ -5307,7 +5307,7 @@
         "mc": 73,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:35.603Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:42.235Z",
       "ratingsImdbId": "tt35630627",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/everybodys_live_with_john_mulaney",
@@ -5369,7 +5369,7 @@
       "mediaType": "tv",
       "tvmazeId": 54128,
       "tvmazeSeasonId": 148872,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "Poker Face",
       "season": 2,
       "year": 2025,
@@ -5394,7 +5394,7 @@
         "mc": 83,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:37.531Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:41.226Z",
       "ratingsImdbId": "tt14269590",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/poker_face",
@@ -5413,7 +5413,7 @@
       "mediaType": "tv",
       "tvmazeId": 51550,
       "tvmazeSeasonId": 186073,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Platonic",
       "season": 2,
       "year": 2025,
@@ -5436,7 +5436,7 @@
         "mc": 77,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:38.502Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:45.898Z",
       "ratingsImdbId": "tt13366604",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/platonic",
@@ -5455,7 +5455,7 @@
       "mediaType": "tv",
       "tvmazeId": 75300,
       "tvmazeSeasonId": 165526,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "Good Cop/Bad Cop",
       "season": 1,
       "year": 2025,
@@ -5479,7 +5479,7 @@
         "mc": null,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:39.479Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:44.251Z",
       "ratingsImdbId": "tt31691565",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/good_cop_bad_cop_2025",
@@ -5498,7 +5498,7 @@
       "mediaType": "tv",
       "tvmazeId": 37387,
       "tvmazeSeasonId": 155189,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "The Righteous Gemstones",
       "season": 4,
       "year": 2025,
@@ -5521,7 +5521,7 @@
         "mc": 77,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:40.487Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:46.965Z",
       "ratingsImdbId": "tt8634332",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_righteous_gemstones",
@@ -5540,7 +5540,7 @@
       "mediaType": "tv",
       "tvmazeId": 67316,
       "tvmazeSeasonId": 149462,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "Dexter: Original Sin",
       "season": 1,
       "year": 2025,
@@ -5565,7 +5565,7 @@
         "mc": 50,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:52:44.771Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:48.466Z",
       "ratingsImdbId": "tt32252772",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/dexter_original_sin",
@@ -5584,7 +5584,7 @@
       "mediaType": "tv",
       "tvmazeId": 67017,
       "tvmazeSeasonId": 166323,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "The Apothecary Diaries",
       "season": 2,
       "year": 2025,
@@ -5610,7 +5610,7 @@
         "mc": null,
         "mal": 8.8
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:42.523Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:58.650Z",
       "ratingsImdbId": "tt26743760",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_apothecary_diaries",
@@ -5629,7 +5629,7 @@
       "mediaType": "tv",
       "tvmazeId": 79152,
       "tvmazeSeasonId": 174072,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Chi: Chikyuu no Undou ni Tsuite",
       "season": 1,
       "year": 2025,
@@ -5654,7 +5654,7 @@
         "mc": null,
         "mal": 8.7
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:43.500Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:52.684Z",
       "ratingsImdbId": "tt33044444",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/orb_on_the_movements_of_the_earth",
@@ -5673,7 +5673,7 @@
       "mediaType": "tv",
       "tvmazeId": 79067,
       "tvmazeSeasonId": 176112,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Culinary Class Wars",
       "season": 2,
       "year": 2025,
@@ -5696,7 +5696,7 @@
         "mc": null,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:59:21.384Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:54.289Z",
       "ratingsImdbId": "tt33040785",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/culinary_class_wars",
@@ -5715,7 +5715,7 @@
       "mediaType": "tv",
       "tvmazeId": 87808,
       "tvmazeSeasonId": 192553,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Physical: Asia",
       "season": 1,
       "year": 2025,
@@ -5738,10 +5738,10 @@
         "mc": null,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:45.477Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:55.953Z",
       "ratingsImdbId": "tt35664835",
       "ratingsUrls": {
-        "rt": "https://www.rottentomatoes.com/tv/physical_100",
+        "rt": "",
         "mc": "https://www.metacritic.com/tv/pijikeol-asia",
         "mal": ""
       },
@@ -5757,7 +5757,7 @@
       "mediaType": "tv",
       "tvmazeId": 74443,
       "tvmazeSeasonId": 178817,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "A Man on the Inside",
       "season": 2,
       "year": 2025,
@@ -5781,7 +5781,7 @@
         "mc": 74,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:59:12.297Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:00.781Z",
       "ratingsImdbId": "tt26670955",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/a_man_on_the_inside",
@@ -5800,7 +5800,7 @@
       "mediaType": "tv",
       "tvmazeId": 58952,
       "tvmazeSeasonId": 131760,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Your Friendly Neighborhood Spider-Man",
       "season": 1,
       "year": 2025,
@@ -5824,7 +5824,7 @@
         "mc": 76,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:47.427Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:03.786Z",
       "ratingsImdbId": "tt16027074",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/your_friendly_neighborhood_spider_man",
@@ -5885,7 +5885,7 @@
       "mediaType": "tv",
       "tvmazeId": 68789,
       "tvmazeSeasonId": 169365,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Conan O'Brien Must Go",
       "season": 2,
       "year": 2025,
@@ -5908,7 +5908,7 @@
         "mc": 77,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:49.853Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:01.899Z",
       "ratingsImdbId": "tt27790101",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/conan_obrien_must_go",
@@ -5927,7 +5927,7 @@
       "mediaType": "tv",
       "tvmazeId": 65649,
       "tvmazeSeasonId": 145865,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Smoke",
       "season": 1,
       "year": 2025,
@@ -5951,7 +5951,7 @@
         "mc": 61,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:50.858Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:08.049Z",
       "ratingsImdbId": "tt24163532",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/smoke",
@@ -6013,7 +6013,7 @@
       "mediaType": "tv",
       "tvmazeId": 33452,
       "tvmazeSeasonId": 172942,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Harley Quinn",
       "season": 5,
       "year": 2025,
@@ -6038,7 +6038,7 @@
         "mc": 85,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:52.844Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:06.856Z",
       "ratingsImdbId": "tt7658402",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/harley_quinn",
@@ -6057,7 +6057,7 @@
       "mediaType": "tv",
       "tvmazeId": 77060,
       "tvmazeSeasonId": 175952,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Nobody Wants This",
       "season": 2,
       "year": 2025,
@@ -6080,7 +6080,7 @@
         "mc": 69,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:52:56.171Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:06.022Z",
       "ratingsImdbId": "tt26933824",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/nobody_wants_this",
@@ -6099,7 +6099,7 @@
       "mediaType": "tv",
       "tvmazeId": 1057,
       "tvmazeSeasonId": 4636,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "The Assets",
       "season": 1,
       "year": 2025,
@@ -6122,7 +6122,7 @@
         "mc": 58,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:54.871Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:10.284Z",
       "ratingsImdbId": "tt3074646",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_assets",
@@ -6185,7 +6185,7 @@
       "mediaType": "tv",
       "tvmazeId": 86738,
       "tvmazeSeasonId": 190123,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "I Love LA",
       "season": 1,
       "year": 2025,
@@ -6208,7 +6208,7 @@
         "mc": 64,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:56.858Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:12.945Z",
       "ratingsImdbId": "tt33362589",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/i_love_la",
@@ -6315,7 +6315,7 @@
       "mediaType": "tv",
       "tvmazeId": 49424,
       "tvmazeSeasonId": 112314,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Tom Clancy's Splinter Cell: Deathwatch",
       "season": 1,
       "year": 2025,
@@ -6340,7 +6340,7 @@
         "mc": 70,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:08:59.862Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:15.284Z",
       "ratingsImdbId": "tt12809802",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/splinter_cell_deathwatch",
@@ -6359,7 +6359,7 @@
       "mediaType": "tv",
       "tvmazeId": 47259,
       "tvmazeSeasonId": 108172,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "Duster",
       "season": 1,
       "year": 2025,
@@ -6383,7 +6383,7 @@
         "mc": 72,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:00.871Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:18.984Z",
       "ratingsImdbId": "tt12160826",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/duster",
@@ -6402,7 +6402,7 @@
       "mediaType": "tv",
       "tvmazeId": 62483,
       "tvmazeSeasonId": 139519,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "Castlevania: Nocturne",
       "season": 1,
       "year": 2025,
@@ -6427,7 +6427,7 @@
         "mc": 77,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:01.865Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:16.986Z",
       "ratingsImdbId": "tt14833612",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/castlevania_nocturne",
@@ -6446,7 +6446,7 @@
       "mediaType": "tv",
       "tvmazeId": 78665,
       "tvmazeSeasonId": 173004,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Dexter: Resurrection",
       "season": 1,
       "year": 2025,
@@ -6471,7 +6471,7 @@
         "mc": 65,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:02.861Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:19.874Z",
       "ratingsImdbId": "tt33043892",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/dexter_resurrection",
@@ -6576,12 +6576,12 @@
       "mediaType": "tv",
       "tvmazeId": 66869,
       "tvmazeSeasonId": 186487,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Elsbeth",
       "season": 3,
       "year": 2025,
       "rating": 7.1,
-      "status": "Airing",
+      "status": "Completed",
       "network": "CBS",
       "genres": [
         "Drama",
@@ -6589,7 +6589,7 @@
         "Crime"
       ],
       "episodeCount": 20,
-      "episodesWatched": null,
+      "episodesWatched": 20,
       "runtime": 60,
       "startDate": "2025-10-12",
       "watchedDate": "",
@@ -6601,7 +6601,7 @@
         "mc": 69,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:59:41.962Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:22.829Z",
       "ratingsImdbId": "tt26591110",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/elsbeth",
@@ -6613,23 +6613,23 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/66869/elsbeth",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/591/1479795.jpg",
       "createdAt": "2026-09-08T20:08:15.580Z",
-      "updatedAt": "2026-09-08T20:08:15.580Z"
+      "updatedAt": "2026-09-09T15:34:50.746Z"
     },
     {
       "id": "d11e5765-cd26-4bd9-bdac-7b22a853855c",
       "mediaType": "tv",
       "tvmazeId": 70927,
       "tvmazeSeasonId": 173700,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "The Devil's Plan",
       "season": 2,
       "year": 2025,
       "rating": 7,
-      "status": "Airing",
+      "status": "Completed",
       "network": "Netflix",
       "genres": [],
       "episodeCount": 12,
-      "episodesWatched": null,
+      "episodesWatched": 12,
       "runtime": 90,
       "startDate": "2025-05-06",
       "watchedDate": "",
@@ -6641,7 +6641,7 @@
         "mc": null,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:06.859Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:27.980Z",
       "ratingsImdbId": "tt27995115",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_devils_plan",
@@ -6653,14 +6653,14 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/70927/the-devils-plan",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/620/1550483.jpg",
       "createdAt": "2026-09-08T20:08:15.580Z",
-      "updatedAt": "2026-09-08T20:08:15.580Z"
+      "updatedAt": "2026-09-09T15:34:48.797Z"
     },
     {
       "id": "eb3ba489-6129-4304-b871-e07a18e01c65",
       "mediaType": "tv",
       "tvmazeId": 52336,
       "tvmazeSeasonId": 117565,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Alien: Earth",
       "season": 1,
       "year": 2025,
@@ -6685,7 +6685,7 @@
         "mc": 85,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:07.997Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:25.355Z",
       "ratingsImdbId": "tt13623632",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/alien_earth",
@@ -6747,7 +6747,7 @@
       "mediaType": "tv",
       "tvmazeId": 73453,
       "tvmazeSeasonId": 161650,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Murderbot",
       "season": 1,
       "year": 2025,
@@ -6772,7 +6772,7 @@
         "mc": 71,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:09.618Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:26.340Z",
       "ratingsImdbId": "tt30444310",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/murderbot",
@@ -6835,7 +6835,7 @@
       "mediaType": "tv",
       "tvmazeId": 82227,
       "tvmazeSeasonId": 180810,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Stick",
       "season": 1,
       "year": 2025,
@@ -6859,7 +6859,7 @@
         "mc": 62,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:11.233Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:30.425Z",
       "ratingsImdbId": "tt31710249",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/stick",
@@ -7010,7 +7010,7 @@
       "mediaType": "tv",
       "tvmazeId": 55350,
       "tvmazeSeasonId": 186528,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Abbott Elementary",
       "season": 5,
       "year": 2025,
@@ -7033,7 +7033,7 @@
         "mc": 83,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:57:36.541Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:33.497Z",
       "ratingsImdbId": "tt14218830",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/abbott_elementary",
@@ -7052,7 +7052,7 @@
       "mediaType": "tv",
       "tvmazeId": 51394,
       "tvmazeSeasonId": 145125,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "The White Lotus",
       "season": 3,
       "year": 2025,
@@ -7076,7 +7076,7 @@
         "mc": 80,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:15.186Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:36.871Z",
       "ratingsImdbId": "tt13406094",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_white_lotus",
@@ -7139,7 +7139,7 @@
       "mediaType": "tv",
       "tvmazeId": 61324,
       "tvmazeSeasonId": 137036,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "IT: Welcome to Derry",
       "season": 1,
       "year": 2025,
@@ -7163,7 +7163,7 @@
         "mc": 61,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:16.796Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:36.059Z",
       "ratingsImdbId": "tt19244304",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/it_welcome_to_derry",
@@ -7182,7 +7182,7 @@
       "mediaType": "tv",
       "tvmazeId": 68627,
       "tvmazeSeasonId": 151940,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "Boots",
       "season": 1,
       "year": 2025,
@@ -7206,7 +7206,7 @@
         "mc": 73,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:17.781Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:32.591Z",
       "ratingsImdbId": "tt27987047",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/boots",
@@ -7225,7 +7225,7 @@
       "mediaType": "tv",
       "tvmazeId": 72758,
       "tvmazeSeasonId": 181582,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "English Teacher",
       "season": 2,
       "year": 2025,
@@ -7248,7 +7248,7 @@
         "mc": 82,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:42:14.442Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:35.041Z",
       "ratingsImdbId": "tt20782190",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/english_teacher",
@@ -7267,7 +7267,7 @@
       "mediaType": "tv",
       "tvmazeId": 70005,
       "tvmazeSeasonId": 154799,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Lazarus",
       "season": 1,
       "year": 2025,
@@ -7291,7 +7291,7 @@
         "mc": 73,
         "mal": 7.1
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:19.749Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:38.062Z",
       "ratingsImdbId": "tt28454008",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/lazarus",
@@ -7439,7 +7439,7 @@
       "mediaType": "tv",
       "tvmazeId": 305,
       "tvmazeSeasonId": 160367,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Black Mirror",
       "season": 7,
       "year": 2025,
@@ -7464,7 +7464,7 @@
         "mc": 74,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:22.973Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:40.593Z",
       "ratingsImdbId": "tt2085059",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/black_mirror",
@@ -7483,19 +7483,19 @@
       "mediaType": "tv",
       "tvmazeId": 81253,
       "tvmazeSeasonId": 178307,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "Stumble",
       "season": 1,
       "year": 2025,
       "rating": 6.3,
-      "status": "Airing",
+      "status": "Completed",
       "network": "NBC",
       "genres": [
         "Comedy",
         "Sports"
       ],
       "episodeCount": 13,
-      "episodesWatched": null,
+      "episodesWatched": 13,
       "runtime": 30,
       "startDate": "2025-11-07",
       "watchedDate": "",
@@ -7507,7 +7507,7 @@
         "mc": 70,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:24.014Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:42.382Z",
       "ratingsImdbId": "tt34878951",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/stumble",
@@ -7519,14 +7519,14 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/81253/stumble",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/617/1542859.jpg",
       "createdAt": "2026-09-08T20:08:15.580Z",
-      "updatedAt": "2026-09-08T20:08:15.580Z"
+      "updatedAt": "2026-09-09T15:34:57.011Z"
     },
     {
       "id": "1a325157-5785-49ff-8d81-ad76f82c761c",
       "mediaType": "tv",
       "tvmazeId": 75852,
       "tvmazeSeasonId": 166607,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "The Chair Company",
       "season": 1,
       "year": 2025,
@@ -7549,7 +7549,7 @@
         "mc": 82,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:25.859Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:43.332Z",
       "ratingsImdbId": "tt31987295",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_chair_company",
@@ -7568,7 +7568,7 @@
       "mediaType": "tv",
       "tvmazeId": 68752,
       "tvmazeSeasonId": 186526,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "High Potential",
       "season": 2,
       "year": 2025,
@@ -7593,7 +7593,7 @@
         "mc": 73,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T21:08:40.441Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:44.799Z",
       "ratingsImdbId": "tt22091076",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/high_potential",
@@ -7612,7 +7612,7 @@
       "mediaType": "tv",
       "tvmazeId": 83618,
       "tvmazeSeasonId": 183644,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Bad Thoughts",
       "season": 1,
       "year": 2025,
@@ -7635,7 +7635,7 @@
         "mc": 56,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:27.912Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:45.496Z",
       "ratingsImdbId": "tt32082636",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/bad_thoughts",
@@ -7654,19 +7654,19 @@
       "mediaType": "tv",
       "tvmazeId": 74865,
       "tvmazeSeasonId": 164752,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Chad Powers",
       "season": 1,
       "year": 2025,
       "rating": 5.8,
-      "status": "Airing",
+      "status": "Completed",
       "network": "Hulu",
       "genres": [
         "Comedy",
         "Sports"
       ],
       "episodeCount": 6,
-      "episodesWatched": null,
+      "episodesWatched": 6,
       "runtime": 33,
       "startDate": "2025-09-30",
       "watchedDate": "",
@@ -7678,7 +7678,7 @@
         "mc": 53,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:29.851Z",
+      "ratingsUpdatedAt": "2026-09-09T15:34:02.880Z",
       "ratingsImdbId": "tt31449991",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/chad_powers",
@@ -7690,19 +7690,19 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/74865/chad-powers",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/639/1599358.jpg",
       "createdAt": "2026-09-08T20:08:15.581Z",
-      "updatedAt": "2026-09-08T20:08:15.581Z"
+      "updatedAt": "2026-09-09T15:34:25.234Z"
     },
     {
       "id": "1e7325b0-458c-4d55-93f0-e05e7def6836",
       "mediaType": "tv",
       "tvmazeId": 2993,
       "tvmazeSeasonId": 137136,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Stranger Things",
       "season": 5,
       "year": 2025,
       "rating": 5.7,
-      "status": "Airing",
+      "status": "Dropped",
       "network": "Netflix",
       "genres": [
         "Drama",
@@ -7722,7 +7722,7 @@
         "mc": 74,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:09:30.858Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:48.962Z",
       "ratingsImdbId": "tt4574334",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/stranger_things",
@@ -7734,7 +7734,7 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/2993/stranger-things",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/595/1489169.jpg",
       "createdAt": "2026-09-08T20:08:15.581Z",
-      "updatedAt": "2026-09-08T20:08:15.581Z"
+      "updatedAt": "2026-09-09T15:35:02.254Z"
     },
     {
       "id": "f9ee8796-73a7-4487-99b4-62e591abce70",
@@ -8133,7 +8133,7 @@
       "season": 1,
       "year": 2025,
       "rating": 4.1,
-      "status": "On Hold",
+      "status": "Dropped",
       "network": "Netflix",
       "genres": [
         "Thriller",
@@ -8164,7 +8164,7 @@
       "tvmazeUrl": "https://www.tvmaze.com/shows/75701/the-beast-in-me",
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/597/1494856.jpg",
       "createdAt": "2026-09-08T20:08:15.581Z",
-      "updatedAt": "2026-09-08T20:08:15.581Z"
+      "updatedAt": "2026-09-09T15:35:20.119Z"
     },
     {
       "id": "481a4612-a07b-43c5-a30e-0ba08cdd1587",
@@ -9554,7 +9554,7 @@
       "mediaType": "tv",
       "tvmazeId": 72758,
       "tvmazeSeasonId": 160165,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "English Teacher",
       "season": 1,
       "year": 2024,
@@ -9577,7 +9577,7 @@
         "mc": 82,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:42:14.442Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:35.041Z",
       "ratingsImdbId": "tt20782190",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/english_teacher",
@@ -10030,7 +10030,7 @@
       "mediaType": "tv",
       "tvmazeId": 77060,
       "tvmazeSeasonId": 169374,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Nobody Wants This",
       "season": 1,
       "year": 2024,
@@ -10053,7 +10053,7 @@
         "mc": 69,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:52:56.171Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:06.022Z",
       "ratingsImdbId": "tt26933824",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/nobody_wants_this",
@@ -10245,7 +10245,7 @@
       "mediaType": "tv",
       "tvmazeId": 67316,
       "tvmazeSeasonId": 149462,
-      "seriesStatus": "",
+      "seriesStatus": "cancelled",
       "title": "Dexter: Original Sin",
       "season": 1,
       "year": 2024,
@@ -10270,7 +10270,7 @@
         "mc": 50,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:52:44.771Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:48.466Z",
       "ratingsImdbId": "tt32252772",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/dexter_original_sin",
@@ -10550,7 +10550,7 @@
       "mediaType": "tv",
       "tvmazeId": 55350,
       "tvmazeSeasonId": 165735,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Abbott Elementary",
       "season": 4,
       "year": 2024,
@@ -10573,7 +10573,7 @@
         "mc": 83,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:57:36.541Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:33.497Z",
       "ratingsImdbId": "tt14218830",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/abbott_elementary",
@@ -10681,7 +10681,7 @@
       "mediaType": "tv",
       "tvmazeId": 79067,
       "tvmazeSeasonId": 173911,
-      "seriesStatus": "",
+      "seriesStatus": "ended",
       "title": "Culinary Class Wars",
       "season": 1,
       "year": 2024,
@@ -10704,7 +10704,7 @@
         "mc": null,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:59:21.384Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:54.289Z",
       "ratingsImdbId": "tt33040785",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/culinary_class_wars",
@@ -10723,7 +10723,7 @@
       "mediaType": "tv",
       "tvmazeId": 74443,
       "tvmazeSeasonId": 163943,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "A Man on the Inside",
       "season": 1,
       "year": 2024,
@@ -10747,7 +10747,7 @@
         "mc": 74,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:59:12.297Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:00.781Z",
       "ratingsImdbId": "tt26670955",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/a_man_on_the_inside",
@@ -10810,7 +10810,7 @@
       "mediaType": "tv",
       "tvmazeId": 66869,
       "tvmazeSeasonId": 167587,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "Elsbeth",
       "season": 2,
       "year": 2024,
@@ -10835,7 +10835,7 @@
         "mc": 69,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:59:41.962Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:22.829Z",
       "ratingsImdbId": "tt26591110",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/elsbeth",
@@ -11853,7 +11853,7 @@
       "mediaType": "tv",
       "tvmazeId": 68752,
       "tvmazeSeasonId": 152277,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "High Potential",
       "season": 1,
       "year": 2024,
@@ -11878,7 +11878,7 @@
         "mc": 73,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T21:08:40.441Z",
+      "ratingsUpdatedAt": "2026-09-09T15:33:44.799Z",
       "ratingsImdbId": "tt22091076",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/high_potential",
@@ -12577,7 +12577,7 @@
         "mc": 77,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-09T06:27:41.039Z",
+      "ratingsUpdatedAt": "2026-09-09T15:44:25.487Z",
       "ratingsImdbId": "tt14688458",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/silo",
@@ -13717,7 +13717,7 @@
       "mediaType": "tv",
       "tvmazeId": 46562,
       "tvmazeSeasonId": 148200,
-      "seriesStatus": "",
+      "seriesStatus": "returning",
       "title": "The Last of Us",
       "season": 2,
       "year": 2024,
@@ -13742,7 +13742,7 @@
         "mc": 83,
         "mal": null
       },
-      "ratingsUpdatedAt": "2026-09-08T20:18:30.647Z",
+      "ratingsUpdatedAt": "2026-09-09T15:32:38.413Z",
       "ratingsImdbId": "tt3581920",
       "ratingsUrls": {
         "rt": "https://www.rottentomatoes.com/tv/the_last_of_us",
@@ -15133,6 +15133,49 @@
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/620/1550781.jpg",
       "createdAt": "2026-09-08T21:48:03.437Z",
       "updatedAt": "2026-09-08T21:48:03.437Z"
+    },
+    {
+      "id": "a3c86151-dd87-405e-b511-d6b25e89a893",
+      "mediaType": "tv",
+      "tvmazeId": 74865,
+      "tvmazeSeasonId": 194432,
+      "seriesStatus": "returning",
+      "title": "Chad Powers",
+      "season": 2,
+      "year": 2026,
+      "rating": null,
+      "status": "Watching",
+      "network": "Hulu",
+      "genres": [
+        "Comedy",
+        "Sports"
+      ],
+      "episodeCount": 6,
+      "episodesWatched": null,
+      "runtime": 32,
+      "startDate": "2026-09-03",
+      "watchedDate": "",
+      "imdb": "tt31449991",
+      "tvdb": "446526",
+      "externalRatings": {
+        "imdb": 7.5,
+        "rt": 80,
+        "mc": 53,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "2026-09-09T15:34:02.880Z",
+      "ratingsImdbId": "tt31449991",
+      "ratingsUrls": {
+        "rt": "https://www.rottentomatoes.com/tv/chad_powers",
+        "mc": "https://www.metacritic.com/tv/chad-powers",
+        "mal": ""
+      },
+      "synopsis": "Eight years after an unforgivable mistake nukes his promising college football career, hotshot quarterback Russ Holliday tries to resurrect his dreams by disguising himself as Chad Powers — a talented oddball who walks onto the struggling South Georgia Catfish.",
+      "comments": "",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/74865/chad-powers",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/639/1599358.jpg",
+      "createdAt": "2026-09-09T15:34:02.433Z",
+      "updatedAt": "2026-09-09T15:34:02.433Z"
     }
   ]
 }
