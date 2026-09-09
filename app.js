@@ -35,22 +35,12 @@
     'showSearchBtn','searchMessage','searchResults','manualEntryBtn','selectedShowCard','entryMediaType','entryTitle','entrySeason','entryYear','entryRating',
     'entryStatus','entryNetwork','entryGenres','entryEpisodeCount','entryEpisodesWatched','entryRuntime','entryStartDate','entryWatchedDate','entryImdb','entryTvdb',
     'entrySynopsis','entryComments','seasonField','episodeCountField','episodesWatchedField','tvdbField','runtimeLabel','releaseDateLabel','metadataMessage','backToSearchBtn','saveEntryBtn',
-    'commentsDialog','commentsTitle','commentsNetwork','commentsBody','commentsPoster','commentsRatings','editFromCommentsBtn','toast'
+    'commentsDialog','commentsTitle','commentsNetwork','commentsSeriesStatus','commentsSynopsis','commentsBody','commentsPoster','commentsRatings','editFromCommentsBtn','guideBtn','guideDialog','backToTopBtn','toast'
   ].map(id => [id, document.getElementById(id)]));
 
   const ratingsPending = new Set();
   const MDBLIST_KEY_STORAGE = 'viewlog.mdblist.key';
   const synopsisCache = new Map();
-  let synopsisAnchor = null;
-  const synopsisTip = document.createElement('div');
-  synopsisTip.id = 'synopsisTip';
-  synopsisTip.className = 'synopsis-tooltip';
-  synopsisTip.setAttribute('role', 'tooltip');
-  synopsisTip.hidden = true;
-  document.body.append(synopsisTip);
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') hideSynopsis(); });
-  window.addEventListener('scroll', hideSynopsis, true);
-  window.addEventListener('resize', hideSynopsis);
   init();
 
   async function init() {
@@ -120,6 +110,10 @@
     el.entryNetwork.addEventListener('input', updateEditFieldColors);
     el.entryRating.addEventListener('input', updateEditFieldColors);
     el.showForm.addEventListener('submit', saveEntryFromForm);
+    el.guideBtn.addEventListener('click', () => el.guideDialog.showModal());
+    document.querySelectorAll('.close-guide').forEach(button => button.addEventListener('click', () => el.guideDialog.close()));
+    el.backToTopBtn.addEventListener('click', scrollToTopFast);
+    [el.showDialog, el.mdblistDialog, el.guideDialog, el.commentsDialog].forEach(bindBackdropClose);
     document.querySelectorAll('.close-dialog').forEach(button => button.addEventListener('click', () => el.showDialog.close()));
     document.querySelectorAll('.close-comments').forEach(button => button.addEventListener('click', () => el.commentsDialog.close()));
     el.commentsPoster.addEventListener('error', () => { el.commentsPoster.hidden = true; });
@@ -197,6 +191,7 @@
       mediaType,
       tvmazeId: nullableNumber(raw.tvmazeId),
       tvmazeSeasonId: nullableNumber(raw.tvmazeSeasonId),
+      seriesStatus: mediaType === 'tv' ? normalizeSeriesStatus(raw.seriesStatus) : '',
       title: String(raw.title || '').trim(),
       season: mediaType === 'movie' ? null : (nullableNumber(raw.season) ?? 1),
       year: nullableNumber(raw.year) ?? CURRENT_YEAR,
@@ -359,6 +354,32 @@
     bindDashboardFilters(el.networkRatings);
   }
 
+  function scrollToTopFast() {
+    const start = window.scrollY;
+    if (!start || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.scrollTo(0, 0);
+      return;
+    }
+    const duration = 320;
+    const startedAt = performance.now();
+    const animate = now => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      window.scrollTo(0, Math.round(start * (1 - eased)));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }
+
+  function bindBackdropClose(dialog) {
+    dialog.addEventListener('click', event => {
+      if (event.target !== dialog) return;
+      const rect = dialog.getBoundingClientRect();
+      const outside = event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+      if (outside) dialog.close();
+    });
+  }
+
   function renderGenreRatingComparison(entries) {
     const groups = new Map();
     entries.forEach(entry => {
@@ -503,7 +524,6 @@
   }
 
   function renderTable() {
-    hideSynopsis();
     const sorted = getFilteredEntries().sort(compareEntries);
     el.showsBody.innerHTML = sorted.map(renderRow).join('');
     el.visibleCount.textContent = String(sorted.length);
@@ -536,20 +556,21 @@
     const status = isEdit
       ? `<select class="inline-status ${statusClass}" aria-label="Status for ${escapeAttr(entry.title)}">${STATUS_OPTIONS.map(value => `<option value="${escapeAttr(value)}"${value === entry.status ? ' selected' : ''}>${escapeHTML(value)}</option>`).join('')}</select>`
       : `<span class="status-display ${statusClass}">${escapeHTML(entry.status)}</span>`;
-    const noteClass = entry.comments.trim() ? ' note-active' : '';
+    const hasNote = Boolean(entry.comments.trim());
+    const note = hasNote ? '<button class="table-action comment-entry note-active" type="button" title="View comments" aria-label="View comments">✎</button>' : '';
     return `<tr data-id="${escapeAttr(entry.id)}">
-      <td class="title-cell"><div class="title-wrap"><span class="media-badge">${titleTag}</span><button class="${titleButtonClass}" type="button">${escapeHTML(entry.title)}</button></div></td>
+      <td class="title-cell"><div class="title-wrap"><span class="media-badge">${titleTag}</span><button class="${titleButtonClass}" type="button">${escapeHTML(entry.title)}</button>${renderSeriesStatusIndicator(entry)}</div></td>
       <td class="center">${season}</td>
       <td class="rating-cell">${rating}</td>
       <td class="external-ratings-cell">${renderExternalRatings(entry)}</td>
       <td title="${escapeAttr(entry.network)}"><span class="network-text ${networkClass}">${escapeHTML(entry.network || '—')}</span></td>
-      <td>${status}</td>
+      <td class="center">${status}</td>
       <td class="genre-cell" title="${escapeAttr(genres)}">${escapeHTML(genres || '—')}</td>
       <td class="center ${entry.episodeCount === null ? 'muted-cell' : ''}">${episodes}</td>
       <td class="center ${entry.runtime === null ? 'muted-cell' : ''}">${runtime}</td>
       <td class="center ${!entry.startDate ? 'muted-cell' : ''}">${escapeHTML(formatDate(entry.startDate) || '—')}</td>
       <td class="center"><a class="icon-link" href="${escapeAttr(trailer)}" target="_blank" rel="noreferrer" title="Search YouTube for official trailer" aria-label="Search YouTube for official trailer"><img class="service-icon youtube-icon" src="assets/youtube.png" alt="" width="24" height="24" /></a></td>
-      <td class="center"><button class="table-action comment-entry${noteClass}" type="button" title="${entry.comments.trim() ? 'View comments' : 'No comments'}">✎</button></td>
+      <td class="center">${note}</td>
       <td class="edit-only-column"><div class="action-group"><button class="table-action fix-match" type="button" title="Fix metadata match" aria-label="Fix metadata match for ${escapeAttr(entry.title)}">Fix</button><button class="table-action edit-entry" type="button" title="Edit">⋯</button><button class="table-action delete-action delete-entry" type="button" title="Delete">×</button></div></td>
     </tr>`;
   }
@@ -559,11 +580,9 @@
       const id = row.dataset.id;
       const titleButton = row.querySelector('.title-button');
       const entry = activeEntries().find(item => item.id === id);
-      titleButton.addEventListener('mouseenter', () => showSynopsis(titleButton, entry));
-      titleButton.addEventListener('focus', () => showSynopsis(titleButton, entry));
-      titleButton.addEventListener('mouseleave', hideSynopsis);
-      titleButton.addEventListener('blur', hideSynopsis);
-      titleButton.addEventListener('click', hideSynopsis);
+      titleButton.addEventListener('click', () => {
+        if (state.mode !== 'edit') openComments(id);
+      });
       row.querySelector('.comment-entry')?.addEventListener('click', () => openComments(id));
       if (state.mode !== 'edit') return;
       row.querySelector('.fetch-ratings')?.addEventListener('click', () => fetchExternalRatings(id));
@@ -587,38 +606,16 @@
     return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
   }
 
-  function hideSynopsis() {
-    synopsisAnchor?.removeAttribute('aria-describedby');
-    synopsisAnchor = null;
-    synopsisTip.hidden = true;
-  }
-
-  async function showSynopsis(anchor, entry) {
-    if (!entry) return;
-    hideSynopsis();
-    synopsisAnchor = anchor;
-    anchor.setAttribute('aria-describedby', 'synopsisTip');
-    synopsisTip.textContent = entry.synopsis || 'Loading synopsis…';
-    synopsisTip.hidden = false;
-    const position = () => {
-      const rect = anchor.getBoundingClientRect();
-      synopsisTip.style.left = Math.max(8, Math.min(rect.left, innerWidth - synopsisTip.offsetWidth - 8)) + 'px';
-      synopsisTip.style.top = Math.max(8, Math.min(rect.bottom + 8, innerHeight - synopsisTip.offsetHeight - 8)) + 'px';
-    };
-    position();
-    let summary = entry.synopsis;
-    if (!summary && entry.mediaType === 'tv' && (entry.tvmazeId || entry.imdb)) {
-      const key = entry.tvmazeId ? '/shows/' + encodeURIComponent(entry.tvmazeId) : '/lookup/shows?imdb=' + encodeURIComponent(entry.imdb);
-      if (!synopsisCache.has(key)) {
-        synopsisCache.set(key, fetch(TVMAZE_BASE + key, { signal: AbortSignal.timeout(8000) })
-          .then(response => { if (!response.ok) throw new Error('Synopsis unavailable'); return response.json(); })
-          .then(show => plainSynopsis(show.summary)).catch(() => { synopsisCache.delete(key); return ''; }));
-      }
-      summary = await synopsisCache.get(key);
+  async function resolveSynopsis(entry) {
+    if (entry.synopsis) return entry.synopsis;
+    if (entry.mediaType !== 'tv' || (!entry.tvmazeId && !entry.imdb)) return '';
+    const key = entry.tvmazeId ? '/shows/' + encodeURIComponent(entry.tvmazeId) : '/lookup/shows?imdb=' + encodeURIComponent(entry.imdb);
+    if (!synopsisCache.has(key)) {
+      synopsisCache.set(key, fetch(TVMAZE_BASE + key, { signal: AbortSignal.timeout(8000) })
+        .then(response => { if (!response.ok) throw new Error('Synopsis unavailable'); return response.json(); })
+        .then(show => plainSynopsis(show.summary)).catch(() => { synopsisCache.delete(key); return ''; }));
     }
-    if (synopsisAnchor !== anchor) return;
-    synopsisTip.textContent = summary || 'No synopsis available yet.';
-    position();
+    return synopsisCache.get(key);
   }
 
 
@@ -719,10 +716,11 @@
       if (state.mode !== 'edit' || findWorkingEntry(id) !== entry || entry.imdb !== imdb) return;
       const scores = parseMdblistRatings(data);
       const ratingsUrls = parseMdblistUrls(data, entry.mediaType);
+      const seriesStatus = entry.mediaType === 'tv' ? normalizeSeriesStatus(data.status || data.show_status || data.series_status) : '';
       const updated = new Date().toISOString();
       const targets = state.workingEntries.filter(item => item.imdb === imdb && item.mediaType === entry.mediaType);
-      const originals = targets.map(item => ({ item, externalRatings: item.externalRatings, ratingsUrls: item.ratingsUrls, ratingsImdbId: item.ratingsImdbId, ratingsUpdatedAt: item.ratingsUpdatedAt }));
-      targets.forEach(item => Object.assign(item, { externalRatings: scores, ratingsUrls, ratingsImdbId: imdb, ratingsUpdatedAt: updated }));
+      const originals = targets.map(item => ({ item, externalRatings: item.externalRatings, ratingsUrls: item.ratingsUrls, ratingsImdbId: item.ratingsImdbId, ratingsUpdatedAt: item.ratingsUpdatedAt, seriesStatus: item.seriesStatus }));
+      targets.forEach(item => Object.assign(item, { externalRatings: scores, ratingsUrls, ratingsImdbId: imdb, ratingsUpdatedAt: updated, ...(seriesStatus ? { seriesStatus } : {}) }));
       try { saveWorkingLibrary(); } catch {
         originals.forEach(({ item, ...old }) => Object.assign(item, old));
         throw new Error('Browser storage is full or unavailable. Ratings could not be saved.');
@@ -1140,6 +1138,7 @@
     const entry = existing ? { ...existing } : blankEntry('tv');
     Object.assign(entry, {
       mediaType: 'tv', season: existing?.mediaType === 'tv' ? existing.season : 1,
+      seriesStatus: normalizeSeriesStatus(show.status),
       synopsis: plainSynopsis(show.summary), title: show.name, network: getNetwork(show), genres: show.genres || [], runtime: show.averageRuntime ?? show.runtime ?? null,
       imdb: show.externals?.imdb || '', tvdb: show.externals?.thetvdb || ''
     });
@@ -1297,6 +1296,7 @@
       id: existing?.id || makeId(), mediaType,
       tvmazeId: mediaType === 'tv' ? (state.selectedShow?.id ?? existing?.tvmazeId ?? null) : null,
       tvmazeSeasonId: mediaType === 'tv' ? (selectedSeason?.id ?? existing?.tvmazeSeasonId ?? null) : null,
+      seriesStatus: mediaType === 'tv' ? normalizeSeriesStatus(state.selectedShow?.status ?? existing?.seriesStatus) : '',
       title, season, year, rating, status: el.entryStatus.value, network: el.entryNetwork.value.trim(), genres: splitGenres(el.entryGenres.value),
       episodeCount, episodesWatched, runtime: nullableNumber(el.entryRuntime.value), startDate: el.entryStartDate.value,
       watchedDate: el.entryWatchedDate.value, imdb: cleanImdb(el.entryImdb.value), tvdb: mediaType === 'tv' ? el.entryTvdb.value.trim() : '',
@@ -1325,7 +1325,7 @@
     }
   }
 
-  function openComments(id) {
+  async function openComments(id) {
     const entry = activeEntries().find(item => item.id === id);
     if (!entry) return;
     state.commentEntryId = id;
@@ -1333,13 +1333,22 @@
     el.commentsNetwork.textContent = entry.network || '';
     el.commentsNetwork.hidden = !entry.network;
     el.commentsNetwork.className = `comments-network ${networkClassName(entry.network)}`;
+    const seriesStatus = seriesStatusMeta(entry.seriesStatus);
+    el.commentsSeriesStatus.textContent = seriesStatus ? `Series: ${seriesStatus.label}` : '';
+    el.commentsSeriesStatus.className = `comments-series-status${seriesStatus ? ` ${seriesStatus.className}` : ''}`;
+    el.commentsSeriesStatus.hidden = !seriesStatus;
     const personalRatingStyle = entry.rating === null ? 'background:rgba(140,148,155,.10);color:#a3abb2;border-color:rgba(140,148,155,.22);' : ratingStyleText(entry.rating);
     el.commentsRatings.innerHTML = `<span class="personal-rating-badge" style="${personalRatingStyle}" title="Your rating"><span>You</span><b>${entry.rating ?? '—'}</b></span>${renderExternalRatings(entry)}`;
     el.commentsPoster.src = entry.image || '';
     el.commentsPoster.alt = entry.image ? `${entry.title} poster` : '';
     el.commentsPoster.hidden = !entry.image;
+    el.commentsSynopsis.textContent = entry.synopsis || (entry.mediaType === 'tv' && (entry.tvmazeId || entry.imdb) ? 'Loading synopsis…' : 'No synopsis available.');
     el.commentsBody.textContent = entry.comments.trim() || 'No comments yet.';
     el.commentsDialog.showModal();
+    if (!entry.synopsis && entry.mediaType === 'tv' && (entry.tvmazeId || entry.imdb)) {
+      const synopsis = await resolveSynopsis(entry);
+      if (state.commentEntryId === id && el.commentsDialog.open) el.commentsSynopsis.textContent = synopsis || 'No synopsis available.';
+    }
   }
 
   function deleteEntry(id) {
@@ -1438,6 +1447,7 @@
       const runtimes = regular.map(episode => Number(episode.runtime)).filter(runtime => Number.isFinite(runtime) && runtime > 0);
       Object.assign(entry, {
         tvmazeId: show.id, tvmazeSeasonId: season.id, title: show.name,
+        seriesStatus: normalizeSeriesStatus(show.status),
         network: getNetwork(show), genres: show.genres || [], episodeCount: regular.length || null,
         episodesWatched: ['Completed', 'Recommended'].includes(entry.status) ? (regular.length || null) : null,
         runtime: runtimes.length ? Math.round(runtimes.reduce((sum, runtime) => sum + runtime, 0) / runtimes.length) : (show.averageRuntime || show.runtime || null),
@@ -1468,7 +1478,8 @@
       mdblistData ||= await fetchJson(`https://api.mdblist.com/imdb/${entry.mediaType === 'movie' ? 'movie' : 'show'}/${encodeURIComponent(entry.imdb)}?${new URLSearchParams({ apikey: mdblistKey })}`, 'MDBList ratings lookup');
       Object.assign(entry, {
         externalRatings: parseMdblistRatings(mdblistData), ratingsUrls: parseMdblistUrls(mdblistData, entry.mediaType),
-        ratingsImdbId: entry.imdb, ratingsUpdatedAt: new Date().toISOString()
+        ratingsImdbId: entry.imdb, ratingsUpdatedAt: new Date().toISOString(),
+        ...(entry.mediaType === 'tv' && normalizeSeriesStatus(mdblistData.status || mdblistData.show_status || mdblistData.series_status) ? { seriesStatus: normalizeSeriesStatus(mdblistData.status || mdblistData.show_status || mdblistData.series_status) } : {})
       });
     }
     return normalizeEntry(entry);
@@ -1598,6 +1609,30 @@
     if (value.includes('paramount')) return 'network-paramount';
     if (value.includes('hulu') || value.includes('fx')) return 'network-hulu';
     return '';
+  }
+  function normalizeSeriesStatus(value) {
+    const status = String(value || '').trim().toLowerCase().replace(/[_-]+/g, ' ');
+    if (!status) return '';
+    if (status.includes('cancel')) return 'cancelled';
+    if (status.includes('return') || status === 'running' || status.includes('continuing')) return 'returning';
+    if (status === 'ended' || status === 'end') return 'ended';
+    if (status.includes('determin') || status === 'tbd' || status === 'unknown') return 'tbd';
+    if (status.includes('development') || status.includes('production') || status === 'planned') return 'in-development';
+    return '';
+  }
+  function seriesStatusMeta(status) {
+    return {
+      returning: { label: 'Returning', className: 'series-returning' },
+      cancelled: { label: 'Cancelled', className: 'series-cancelled' },
+      ended: { label: 'Ended', className: 'series-ended' },
+      tbd: { label: 'To be determined', className: 'series-tbd' },
+      'in-development': { label: 'In development', className: 'series-in-development' },
+    }[normalizeSeriesStatus(status)] || null;
+  }
+  function renderSeriesStatusIndicator(entry) {
+    if (entry.mediaType !== 'tv') return '';
+    const meta = seriesStatusMeta(entry.seriesStatus);
+    return meta ? `<span class="series-status-indicator ${meta.className}" title="Series status: ${escapeAttr(meta.label)}" role="img" aria-label="Series status: ${escapeAttr(meta.label)}"></span>` : '';
   }
   function updateEditFieldColors() {
     const rating = normalizeRating(el.entryRating.value);

@@ -192,4 +192,6 @@ In editor mode, use the **Fix metadata match** action on an existing row to sear
 
 Ratings badges link to their source pages. MDBList source URLs are saved in shows.json; if no URL is available, the badge opens a search. Existing scores remain until you manually refresh. Enter a MDBList key using the editor key settings; old OMDb keys are not reused.
 
+TV entries also store the series-level status returned by TVmaze or MDBList. A compact colored icon at the right edge of the title column shows Returning (green), Cancelled (red), Ended (grey), To be determined (yellow), or In development (blue). Hover for its meaning; the Notes dialog spells it out beneath the network. Existing entries gain this value when ratings or metadata are refreshed, and matching seasons sharing an IMDb ID update together.
+
 Titles with an Anime genre (case-insensitive) display IMDb and MyAnimeList scores instead of RT and MC. MAL scores are out of 10 and link to MyAnimeList. Manually refresh previously fetched titles to retrieve MAL scores; unavailable scores show a dash.

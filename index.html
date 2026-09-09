@@ -25,14 +25,17 @@
 </svg></span></h1>
         <p class="subtitle">TV seasons & movies · ratings, notes and yearly statistics</p>
       </div>
-      <div class="header-actions" id="editActions" hidden>
-        <button id="addShowBtn" class="button button-primary" type="button">+ Add title</button>
-        <button id="publishExportBtn" class="button" type="button">Export shows.json</button>
-        <label class="button file-button" for="importFile">Import CSV / JSON</label>
-        <input id="importFile" type="file" accept="application/json,text/csv,.json,.csv" hidden />
-        <button id="resetWorkingBtn" class="button" type="button">Reset from published</button>
-        <button id="mdblistSettingsBtn" class="button" type="button">MDBList key</button>
-        <button id="publicModeBtn" class="button" type="button">Exit editor</button>
+      <div class="header-actions">
+        <div id="editActions" class="edit-action-group" hidden>
+          <button id="addShowBtn" class="button button-primary" type="button">+ Add title</button>
+          <button id="publishExportBtn" class="button" type="button">Export shows.json</button>
+          <label class="button file-button" for="importFile">Import CSV / JSON</label>
+          <input id="importFile" type="file" accept="application/json,text/csv,.json,.csv" hidden />
+          <button id="resetWorkingBtn" class="button" type="button">Reset from published</button>
+          <button id="mdblistSettingsBtn" class="button" type="button">MDBList key</button>
+          <button id="publicModeBtn" class="button" type="button">Exit editor</button>
+        </div>
+        <button id="guideBtn" class="button" type="button">Guide</button>
       </div>
     </header>
 
@@ -158,8 +161,8 @@
               <th class="col-network"><button class="sort-button" data-sort="network" type="button">Network <span></span></button></th>
               <th class="col-status"><button class="sort-button" data-sort="status" type="button">Status <span></span></button></th>
               <th class="col-genre"><button class="sort-button" data-sort="genre" type="button">Genre <span></span></button></th>
-              <th class="col-episodes"><button class="sort-button" data-sort="episodeCount" type="button">Episodes <span></span></button></th>
-              <th class="col-runtime"><button class="sort-button" data-sort="runtime" type="button">Runtime <span></span></button></th>
+              <th class="col-episodes"><button class="sort-button" data-sort="episodeCount" type="button" title="Episodes">Eps <span></span></button></th>
+              <th class="col-runtime"><button class="sort-button" data-sort="runtime" type="button" title="Runtime in minutes">Mins <span></span></button></th>
               <th class="col-start"><button class="sort-button" data-sort="startDate" type="button">Premier <span></span></button></th>
               <th class="col-link">Trailer</th>
               <th class="col-note">Note</th>
@@ -183,6 +186,7 @@
     <footer class="footer">
       <span>Metadata powered by <a href="https://www.tvmaze.com/" target="_blank" rel="noreferrer">TVmaze</a>. & <a href="https://mdblist.com/" target="_blank" rel="noreferrer">MDBList</a></span>
       <span>Messages me on Discord <code>@muzaroni</code>.</span>
+      <button id="backToTopBtn" class="footer-top-button" type="button">Back to top <span aria-hidden="true">↑</span></button>
     </footer>
   </main>
 
@@ -309,16 +313,47 @@
     </form>
   </dialog>
 
+  <dialog id="guideDialog" class="dialog dialog-small">
+    <div class="dialog-header">
+      <div><p class="eyebrow">Quick reference</p><h2>Viewlog guide</h2></div>
+      <button class="icon-button close-guide" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="dialog-body guide-body">
+      <section><h3>Series status</h3><div class="guide-status-grid">
+        <div class="guide-status-item"><i class="series-status-indicator series-returning" aria-hidden="true"></i><div><strong>Returning</strong><small>The series is currently airing or expected to return with new episodes.</small></div></div>
+        <div class="guide-status-item"><i class="series-status-indicator series-cancelled" aria-hidden="true"></i><div><strong>Cancelled</strong><small>The series was discontinued and no further episodes are expected.</small></div></div>
+        <div class="guide-status-item"><i class="series-status-indicator series-ended" aria-hidden="true"></i><div><strong>Ended</strong><small>The series has concluded and is not expected to continue.</small></div></div>
+        <div class="guide-status-item"><i class="series-status-indicator series-tbd" aria-hidden="true"></i><div><strong>Undecided</strong><small>A renewal, cancellation, or conclusion has not been confirmed.</small></div></div>
+        <div class="guide-status-item"><i class="series-status-indicator series-in-development" aria-hidden="true"></i><div><strong>In development</strong><small>The series is announced or being produced but has not premiered yet.</small></div></div>
+      </div></section>
+      <section><h3>My status</h3><div class="guide-personal-status-grid">
+        <div><span class="status-display status-completed">Completed</span><small>Fully completed the season.</small></div>
+        <div><span class="status-display status-watching">Watching</span><small>Currently watching.</small></div>
+        <div><span class="status-display status-recommended">Recommended</span><small>Plan to watch.</small></div>
+        <div><span class="status-display status-on-hold">On Hold</span><small>Started but currently on hold.</small></div>
+        <div><span class="status-display status-dropped">Dropped</span><small>Partially watched but dropped.</small></div>
+        <div><span class="status-display status-trash">Trash</span><small>Completed but literal trash.</small></div>
+        <div><span class="status-display status-upcoming">Upcoming</span><small>Not premiered yet.</small></div>
+        <div><span class="status-display status-airing">Airing</span><small>Currently releasing new episodes.</small></div>
+      </div></section>
+      <section><h3>Useful shortcuts</h3><p>Select a year and use Library or Dashboard to switch views. Select a title to read its synopsis, use the note icon for your review, and use column headings to sort.</p></section>
+      <div class="dialog-actions"><button class="button button-primary close-guide" type="button">Got it</button></div>
+    </div>
+  </dialog>
+
   <dialog id="commentsDialog" class="dialog dialog-small">
     <div class="dialog-header">
-      <div><p class="eyebrow">Notes</p><h2 id="commentsTitle">Comments</h2><span id="commentsNetwork" class="comments-network"></span></div>
+      <div><p class="eyebrow">Notes</p><h2 id="commentsTitle">Comments</h2><span id="commentsNetwork" class="comments-network"></span><span id="commentsSeriesStatus" class="comments-series-status"></span></div>
       <div id="commentsRatings" class="comments-ratings"></div>
       <button class="icon-button close-comments" type="button" aria-label="Close">×</button>
     </div>
     <div class="dialog-body">
       <div class="comments-content">
         <img id="commentsPoster" class="comments-poster" alt="" hidden />
-        <p id="commentsBody" class="comments-body"></p>
+        <div class="comments-copy">
+          <section><h3>Synopsis</h3><p id="commentsSynopsis" class="comments-synopsis"></p></section>
+          <section><h3>Review</h3><p id="commentsBody" class="comments-body"></p></section>
+        </div>
       </div>
       <div class="dialog-actions">
         <button id="editFromCommentsBtn" class="button button-primary" type="button">Edit title</button>
