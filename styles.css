@@ -181,18 +181,18 @@ body.public-view .title-button:hover { color: var(--accent); }
 .action-group, .link-group { display: flex; align-items: center; justify-content: center; gap: 3px; }
 .link-group { justify-content: flex-start; }
 .text-link { font-size: 13px; color: #169cf0; text-decoration: underline; text-underline-offset: 2px; }
-.col-title { width: 300px; }
+.col-title { width: 320px; }
 .col-season { width: 46px; text-align: center; }
 .col-rating { width: 68px; }
 .col-network { width: 120px; }
-.col-status { width: 100px; text-align: center; }
+.col-status { width: 120px; text-align: center; }
 .col-status .sort-button { justify-content: center; }
 .col-genre { width: 250px; }
 .col-episodes { width: 48px; text-align: center; }
 .col-runtime { width: 48px; text-align: center; }
-.col-start { width: 95px; }
-.col-link { width: 56px; text-align: center; }
-.col-note { width: 52px; text-align: center; }
+.col-start { width: 85px; }
+.col-link { width: 50px; text-align: center; }
+.col-note { width: 45px; text-align: center; }
 .col-actions { width: 92px; }
 body.public-view .edit-only-column { display: none; }
 .empty-state { min-height: 300px; display: grid; place-items: center; align-content: center; gap: 8px; text-align: center; color: var(--muted); }
