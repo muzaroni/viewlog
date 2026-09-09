@@ -31,11 +31,11 @@
     'statTitles','statTitlesDetail','statHours','statHoursDetail','statRating','statRatingDetail','statGenres','statGenreDetail','statNetwork','statNetworkDetail',
     'ratingDistribution','networkRatings','genreRatings','genreBars','networkBars','statusBars','ratingTrend','trendLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
     'searchFilter','typeFilter','statusFilter','networkFilter','genreFilter','visibleCount','showsBody','emptyState','emptyTitle','emptyText',
-    'showDialog','showForm','dialogEyebrow','dialogTitle','searchStep','detailsStep','mediaChoice','chooseTvBtn','chooseMovieBtn','tvSearchArea','searchLabel','searchHelper','showSearchInput',
+    'showDialog','showForm','dialogEyebrow','dialogTitle','dialogExternalRatings','searchStep','detailsStep','mediaChoice','chooseTvBtn','chooseMovieBtn','tvSearchArea','searchLabel','searchHelper','showSearchInput',
     'showSearchBtn','searchMessage','searchResults','manualEntryBtn','selectedShowCard','entryMediaType','entryTitle','entrySeason','entryYear','entryRating',
     'entryStatus','entryNetwork','entryGenres','entryEpisodeCount','entryEpisodesWatched','entryRuntime','entryStartDate','entryWatchedDate','entryImdb','entryTvdb',
     'entrySynopsis','entryComments','seasonField','episodeCountField','episodesWatchedField','tvdbField','runtimeLabel','releaseDateLabel','metadataMessage','backToSearchBtn','saveEntryBtn',
-    'commentsDialog','commentsTitle','commentsBody','editFromCommentsBtn','toast'
+    'commentsDialog','commentsTitle','commentsNetwork','commentsBody','commentsPoster','commentsRatings','editFromCommentsBtn','toast'
   ].map(id => [id, document.getElementById(id)]));
 
   const ratingsPending = new Set();
@@ -115,10 +115,14 @@
     el.entryStatus.addEventListener('change', () => {
       state.statusManuallySet = true;
       autoFillCompletedEpisodes();
+      updateEditFieldColors();
     });
+    el.entryNetwork.addEventListener('input', updateEditFieldColors);
+    el.entryRating.addEventListener('input', updateEditFieldColors);
     el.showForm.addEventListener('submit', saveEntryFromForm);
     document.querySelectorAll('.close-dialog').forEach(button => button.addEventListener('click', () => el.showDialog.close()));
     document.querySelectorAll('.close-comments').forEach(button => button.addEventListener('click', () => el.commentsDialog.close()));
+    el.commentsPoster.addEventListener('error', () => { el.commentsPoster.hidden = true; });
     el.editFromCommentsBtn.addEventListener('click', () => {
       const id = state.commentEntryId;
       el.commentsDialog.close();
@@ -1221,6 +1225,8 @@
     el.entryTvdb.value = entry.tvdb || '';
     el.entrySynopsis.value = entry.synopsis || '';
     el.entryComments.value = entry.comments || '';
+    updateEditFieldColors();
+    updateDialogExternalRatings(entry);
     el.saveEntryBtn.textContent = isNew ? 'Add title' : 'Save changes';
     hideMessage(el.metadataMessage);
   }
@@ -1319,6 +1325,14 @@
     if (!entry) return;
     state.commentEntryId = id;
     el.commentsTitle.textContent = entry.mediaType === 'movie' ? entry.title : `${entry.title} — Season ${entry.season}`;
+    el.commentsNetwork.textContent = entry.network || '';
+    el.commentsNetwork.hidden = !entry.network;
+    el.commentsNetwork.className = `comments-network ${networkClassName(entry.network)}`;
+    const personalRatingStyle = entry.rating === null ? 'background:rgba(140,148,155,.10);color:#a3abb2;border-color:rgba(140,148,155,.22);' : ratingStyleText(entry.rating);
+    el.commentsRatings.innerHTML = `<span class="personal-rating-badge" style="${personalRatingStyle}" title="Your rating"><span>You</span><b>${entry.rating ?? '—'}</b></span>${renderExternalRatings(entry)}`;
+    el.commentsPoster.src = entry.image || '';
+    el.commentsPoster.alt = entry.image ? `${entry.title} poster` : '';
+    el.commentsPoster.hidden = !entry.image;
     el.commentsBody.textContent = entry.comments.trim() || 'No comments yet.';
     el.commentsDialog.showModal();
   }
@@ -1546,6 +1560,8 @@
     state.selectedShow = null;
     state.selectedSeasons = [];
     el.showForm.reset();
+    el.dialogExternalRatings.hidden = true;
+    el.dialogExternalRatings.innerHTML = '';
     el.searchResults.innerHTML = '';
     el.tvSearchArea.hidden = true;
     hideMessage(el.searchMessage);
@@ -1577,6 +1593,25 @@
     if (value.includes('paramount')) return 'network-paramount';
     if (value.includes('hulu') || value.includes('fx')) return 'network-hulu';
     return '';
+  }
+  function updateEditFieldColors() {
+    const rating = normalizeRating(el.entryRating.value);
+    el.entryRating.style.cssText = rating === null ? 'background:rgba(140,148,155,.10);color:#a3abb2;border-color:rgba(140,148,155,.22);' : ratingStyleText(rating);
+    const statusClasses = STATUS_OPTIONS.map(statusClassName);
+    el.entryStatus.classList.remove(...statusClasses);
+    el.entryStatus.classList.add(statusClassName(el.entryStatus.value));
+    el.entryNetwork.classList.remove('network-netflix', 'network-disney', 'network-hbo', 'network-apple', 'network-prime', 'network-crunchyroll', 'network-peacock', 'network-paramount', 'network-hulu');
+    const networkClass = networkClassName(el.entryNetwork.value);
+    if (networkClass) el.entryNetwork.classList.add(networkClass);
+  }
+  function updateDialogExternalRatings(entry) {
+    if (!entry?.imdb) {
+      el.dialogExternalRatings.hidden = true;
+      el.dialogExternalRatings.innerHTML = '';
+      return;
+    }
+    el.dialogExternalRatings.innerHTML = renderExternalRatings(entry);
+    el.dialogExternalRatings.hidden = false;
   }
   function formatDate(value) {
     if (!value) return '';

@@ -16,10 +16,12 @@
   <main class="app-shell">
     <header class="topbar">
       <div>
-        <h1 class="brand-heading"><span class="brand-logo" role="img" aria-label="Viewlog"><svg xmlns="http://www.w3.org/2000/svg" width="211" height="190" viewBox="0 0 211 190" aria-hidden="true">
-  <path fill="#fff" d="M51 14H73Q78 14 81 20L101 54L84 84Q82 88 79 82L45 24Q41 14 51 14Z"/>
-  <path fill="#f2d137" d="M135 14H157Q166 14 161 23L117 96Q112 106 102 106Q92 106 87 97Q84 92 88 85L126 21Q129 14 135 14Z"/>
-  <text x="105.5" y="162" text-anchor="middle" fill="#fff" font-family="'Reddit Sans', Arial, sans-serif" font-size="47" font-weight="750" letter-spacing="-2">viewlog</text>
+        <h1 class="brand-heading"><span class="brand-logo" role="img" aria-label="Viewlog"><svg xmlns="http://www.w3.org/2000/svg" width="466" height="120" viewBox="0 0 466 120" aria-hidden="true">
+  <g transform="translate(-35 -4)">
+    <path fill="#fff" d="M51 14H73Q78 14 81 20L101 54L84 84Q82 88 79 82L45 24Q41 14 51 14Z"/>
+    <path fill="#f2d137" d="M135 14H157Q166 14 161 23L117 96Q112 106 102 106Q92 106 87 97Q84 92 88 85L126 21Q129 14 135 14Z"/>
+  </g>
+  <text x="135" y="91" font-family="'Reddit Sans', Arial, sans-serif" font-size="78" font-weight="750" letter-spacing="-4"><tspan fill="#fff">view</tspan><tspan fill="#f2d137">log</tspan></text>
 </svg></span></h1>
         <p class="subtitle">TV seasons & movies · ratings, notes and yearly statistics</p>
       </div>
@@ -199,6 +201,7 @@
     <form id="showForm" method="dialog" novalidate>
       <div class="dialog-header">
         <div><p class="eyebrow" id="dialogEyebrow">Add title</p><h2 id="dialogTitle">What did you watch?</h2></div>
+        <div id="dialogExternalRatings" class="dialog-external-ratings" hidden></div>
         <button class="icon-button close-dialog" type="button" aria-label="Close">×</button>
       </div>
 
@@ -227,6 +230,10 @@
         <div id="selectedShowCard" class="selected-show" hidden></div>
 
         <div class="form-grid">
+          <label class="field field-block span-2">
+            <span>Title</span>
+            <input id="entryTitle" required />
+          </label>
           <label class="field field-block">
             <span>Type</span>
             <select id="entryMediaType"><option value="tv">TV season</option><option value="movie">Movie</option></select>
@@ -234,10 +241,6 @@
           <label class="field field-block">
             <span>Archive year</span>
             <input id="entryYear" type="number" min="1900" max="2200" required />
-          </label>
-          <label class="field field-block span-2">
-            <span>Title</span>
-            <input id="entryTitle" required />
           </label>
           <label id="seasonField" class="field field-block">
             <span>Season</span>
@@ -255,7 +258,7 @@
             <span>Network</span>
             <input id="entryNetwork" placeholder="e.g. HBO Max, A24" />
           </label>
-          <label class="field field-block span-2">
+          <label class="field field-block">
             <span>Genres</span>
             <input id="entryGenres" placeholder="Drama, Comedy" />
           </label>
@@ -289,11 +292,11 @@
           </label>
           <label class="field field-block span-2">
             <span>Synopsis</span>
-            <textarea id="entrySynopsis" rows="3" placeholder="A short description shown when hovering over the title…"></textarea>
+            <textarea id="entrySynopsis" rows="2" placeholder="A short description shown when hovering over the title…"></textarea>
           </label>
-          <label class="field field-block span-2">
+          <label class="field field-block span-3">
             <span>Comments</span>
-            <textarea id="entryComments" rows="5" placeholder="Thoughts on the season or movie…"></textarea>
+            <textarea id="entryComments" rows="3" placeholder="Thoughts on the season or movie…"></textarea>
           </label>
         </div>
 
@@ -308,11 +311,15 @@
 
   <dialog id="commentsDialog" class="dialog dialog-small">
     <div class="dialog-header">
-      <div><p class="eyebrow">Notes</p><h2 id="commentsTitle">Comments</h2></div>
+      <div><p class="eyebrow">Notes</p><h2 id="commentsTitle">Comments</h2><span id="commentsNetwork" class="comments-network"></span></div>
+      <div id="commentsRatings" class="comments-ratings"></div>
       <button class="icon-button close-comments" type="button" aria-label="Close">×</button>
     </div>
     <div class="dialog-body">
-      <p id="commentsBody" class="comments-body"></p>
+      <div class="comments-content">
+        <img id="commentsPoster" class="comments-poster" alt="" hidden />
+        <p id="commentsBody" class="comments-body"></p>
+      </div>
       <div class="dialog-actions">
         <button id="editFromCommentsBtn" class="button button-primary" type="button">Edit title</button>
         <button class="button close-comments" type="button">Close</button>
