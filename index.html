@@ -137,7 +137,7 @@
         <select id="statusFilter"><option value="">All statuses</option></select>
       </label>
       <label class="field">
-        <span>Network</span>
+        <span id="networkLabel">Network</span>
         <select id="networkFilter"><option value="">All networks</option></select>
       </label>
       <label class="field">
@@ -236,6 +236,16 @@
         <div id="selectedShowCard" class="selected-show" hidden></div>
 
         <div class="form-grid">
+          <section id="movieMetadataFields" class="span-3 movie-edit-metadata" hidden>
+            <div class="movie-edit-fields">
+              <label class="field field-block"><span>Director</span><input id="entryDirector" /></label>
+              <label class="field field-block"><span>Writer</span><input id="entryWriter" /></label>
+              <label class="field field-block movie-cast-field"><span>Top cast</span><input id="entryCast" /></label>
+              <label class="field field-block movie-poster-url"><span>Poster URL</span><input id="entryPoster" type="url" placeholder="https://…" /></label>
+              <button id="loadMovieMetadataBtn" class="button movie-load-details" type="button">Reload details</button>
+            </div>
+            <img id="moviePosterPreview" class="movie-edit-poster" alt="Movie poster preview" hidden />
+          </section>
           <label class="field field-block span-2">
             <span>Title</span>
             <input id="entryTitle" required />
@@ -296,7 +306,7 @@
             <span>TVDB ID</span>
             <input id="entryTvdb" placeholder="12345" />
           </label>
-          <label class="field field-block span-2">
+          <label class="field field-block span-3">
             <span>Synopsis</span>
             <textarea id="entrySynopsis" rows="2" placeholder="A short description shown when hovering over the title…"></textarea>
           </label>

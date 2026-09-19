@@ -34,7 +34,7 @@
     'showDialog','showForm','dialogEyebrow','dialogTitle','dialogExternalRatings','searchStep','detailsStep','mediaChoice','chooseTvBtn','chooseMovieBtn','tvSearchArea','searchLabel','searchHelper','showSearchInput',
     'showSearchBtn','searchMessage','searchResults','manualEntryBtn','selectedShowCard','entryMediaType','entryTitle','entrySeason','entryYear','entryRating',
     'entryStatus','entryNetwork','entryGenres','entryEpisodeCount','entryEpisodesWatched','entryRuntime','entryStartDate','entryWatchedDate','entryImdb','entryTvdb',
-    'entrySynopsis','entryComments','seasonField','episodeCountField','episodesWatchedField','tvdbField','runtimeLabel','releaseDateLabel','metadataMessage','backToSearchBtn','saveEntryBtn',
+    'movieMetadataFields','entryDirector','entryWriter','entryCast','entryPoster','moviePosterPreview','loadMovieMetadataBtn','networkLabel','entrySynopsis','entryComments','seasonField','episodeCountField','episodesWatchedField','tvdbField','runtimeLabel','releaseDateLabel','metadataMessage','backToSearchBtn','saveEntryBtn',
     'commentsDialog','commentsTitle','commentsNetwork','commentsSeriesStatus','commentsSynopsis','commentsBody','commentsPoster','commentsRatings','editFromCommentsBtn','guideBtn','guideDialog','backToTopBtn','toast'
   ].map(id => [id, document.getElementById(id)]));
 
@@ -112,6 +112,9 @@
       autoFillCompletedEpisodes();
       updateEditFieldColors();
     });
+    el.entryPoster.addEventListener('input', updateMoviePoster);
+    el.moviePosterPreview.addEventListener('error', () => { el.moviePosterPreview.hidden = true; });
+    el.loadMovieMetadataBtn.addEventListener('click', loadMovieEditMetadata);
     el.entryNetwork.addEventListener('input', updateEditFieldColors);
     el.entryRating.addEventListener('input', updateEditFieldColors);
     el.showForm.addEventListener('submit', saveEntryFromForm);
@@ -219,6 +222,7 @@
       comments: String(raw.comments || ''),
       tvmazeUrl: String(raw.tvmazeUrl || ''),
       image: String(raw.image || ''),
+      director: String(raw.director || ''), writer: String(raw.writer || ''), cast: String(raw.cast || '').split(',').map(name => name.trim()).filter(Boolean).slice(0, 5).join(', '),
       createdAt: raw.createdAt || new Date().toISOString(),
       updatedAt: raw.updatedAt || new Date().toISOString(),
     };
@@ -941,6 +945,37 @@
     return match ? { query: match[1].trim(), year: match[2] || match[3] } : { query, year: '' };
   }
 
+  function titleSearchWords(value) {
+    const ignored = new Set(['a', 'an', 'and', 'at', 'for', 'in', 'of', 'on', 'the', 'to', 'with']);
+    return String(value || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(word => word && !ignored.has(word));
+  }
+
+  function closeSearchWord(left, right) {
+    if (left === right || left.includes(right) || right.includes(left)) return true;
+    if (left.length < 4 || right.length < 4 || Math.abs(left.length - right.length) > 1) return false;
+    let edits = 0;
+    for (let i = 0, j = 0; i < left.length && j < right.length;) {
+      if (left[i] === right[j]) { i++; j++; continue; }
+      if (++edits > 1) return false;
+      if (left.length > right.length) i++;
+      else if (right.length > left.length) j++;
+      else { i++; j++; }
+    }
+    return true;
+  }
+
+  function fuzzyTitleScore(title, query) {
+    const wanted = titleSearchWords(query);
+    const available = titleSearchWords(title);
+    if (!wanted.length || !available.length) return 0;
+    const matches = wanted.filter(word => available.some(candidate => closeSearchWord(word, candidate))).length;
+    return matches / wanted.length + (available.join(' ') === wanted.join(' ') ? 1 : 0);
+  }
+
+  function fuzzyFallbackTerms(query) {
+    return [...new Set(titleSearchWords(query).sort((a, b) => b.length - a.length))].slice(0, 3);
+  }
+
   async function searchShows() {
     if (state.searchMediaType === 'movie') return searchMovies();
     const { query, year } = parseTitleSearch(el.showSearchInput.value);
@@ -951,10 +986,23 @@
     el.searchResults.innerHTML = '';
     showMessage(el.searchMessage, 'Searching TVmaze…');
     try {
-      const response = await fetch(`${TVMAZE_BASE}/search/shows?q=${encodeURIComponent(query)}`);
-      if (!response.ok) throw new Error(`Search failed (${response.status})`);
-      const data = await response.json();
-      const results = Array.isArray(data) ? data.filter(({ show }) => !year || show.premiered?.slice(0, 4) === year) : [];
+      async function requestShows(searchQuery) {
+        const response = await fetch(`${TVMAZE_BASE}/search/shows?q=${encodeURIComponent(searchQuery)}`);
+        if (!response.ok) throw new Error(`Search failed (${response.status})`);
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+      }
+      let data = await requestShows(query);
+      let fuzzy = false;
+      if (!data.length) {
+        for (const fallback of fuzzyFallbackTerms(query)) {
+          if (fallback === query.toLowerCase()) continue;
+          data = await requestShows(fallback);
+          if (data.length) { fuzzy = true; break; }
+        }
+      }
+      let results = data.filter(({ show }) => !year || show.premiered?.slice(0, 4) === year);
+      if (fuzzy) results = results.filter(({ show }) => fuzzyTitleScore(show.name, query) >= .45).sort((a, b) => fuzzyTitleScore(b.show.name, query) - fuzzyTitleScore(a.show.name, query));
       if (token !== state.searchToken) return;
       if (!Array.isArray(results) || !results.length) return showMessage(el.searchMessage, 'No matches found. Try another spelling or enter it manually.', 'error');
       hideMessage(el.searchMessage);
@@ -1045,14 +1093,27 @@
     el.searchResults.innerHTML = '';
     showMessage(el.searchMessage, 'Searching MDBList…');
     try {
-      const params = new URLSearchParams({ query, apikey: key, limit: '50' });
-      if (year) params.set('year', year);
-      const response = await fetch('https://api.mdblist.com/search/movie?' + params, { signal: AbortSignal.timeout(15000) });
-      if (!response.ok) throw new Error(response.status === 429 ? 'MDBList request limit reached. Try again later.' : [401, 403].includes(response.status) ? 'MDBList key was rejected. Check MDBList key settings.' : `Search failed (${response.status})`);
-      const data = await response.json();
-      if (data?.error) throw new Error(typeof data.error === 'string' ? `MDBList: ${data.error}` : 'MDBList could not search for movies.');
+      async function requestMovies(searchQuery) {
+        const params = new URLSearchParams({ query: searchQuery, apikey: key, limit: '50' });
+        if (year) params.set('year', year);
+        const response = await fetch('https://api.mdblist.com/search/movie?' + params, { signal: AbortSignal.timeout(15000) });
+        if (!response.ok) throw new Error(response.status === 429 ? 'MDBList request limit reached. Try again later.' : [401, 403].includes(response.status) ? 'MDBList key was rejected. Check MDBList key settings.' : `Search failed (${response.status})`);
+        const data = await response.json();
+        if (data?.error) throw new Error(typeof data.error === 'string' ? `MDBList: ${data.error}` : 'MDBList could not search for movies.');
+        return movieSearchResults(data);
+      }
+      let found = await requestMovies(query);
+      let fuzzy = false;
+      if (!found.length) {
+        for (const fallback of fuzzyFallbackTerms(query)) {
+          if (fallback === query.toLowerCase()) continue;
+          found = await requestMovies(fallback);
+          if (found.length) { fuzzy = true; break; }
+        }
+      }
       // MDBList's year hint includes adjacent years; keep the requested year.
-      const results = movieSearchResults(data).filter(movie => !year || String(movieResultValue(movie, ['year', 'release_year']) || movieReleaseDate(movie).slice(0, 4)) === year);
+      let results = found.filter(movie => !year || String(movieResultValue(movie, ['year', 'release_year']) || movieReleaseDate(movie).slice(0, 4)) === year);
+      if (fuzzy) results = results.filter(movie => fuzzyTitleScore(movieResultValue(movie, ['title', 'name']), query) >= .45).sort((a, b) => fuzzyTitleScore(movieResultValue(b, ['title', 'name']), query) - fuzzyTitleScore(movieResultValue(a, ['title', 'name']), query));
       if (token !== state.searchToken) return;
       if (!results.length) return showMessage(el.searchMessage, 'No movies found. Try another spelling or enter it manually.', 'error');
       hideMessage(el.searchMessage);
@@ -1102,6 +1163,107 @@
     };
   }
 
+  function cleanWikipediaValue(value) {
+    return String(value || '')
+      .replace(/<!--.*?-->/gs, '')
+      .replace(/<ref\b[^>]*>[\s\S]*?<\/ref>|<ref\b[^>]*\/>/gi, '')
+      .replace(/\[\[[^\]|]+\|([^\]]+)\]\]/g, '$1')
+      .replace(/\[\[([^\]]+)\]\]/g, '$1')
+      .replace(/\{\{(?:plainlist|ubl|unbulleted list)\s*\|/gi, '')
+      .replace(/\{\{[^{}]*\}\}/g, '')
+      .replace(/\}\}/g, '')
+      .replace(/^\s*[*#]\s*/gm, '')
+      .split(/\n|<br\s*\/?\s*>/i)
+      .map(part => part.replace(/'{2,}/g, '').trim())
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  function shortDistributorName(name) {
+    const value = String(name || '').trim();
+    const rules = [
+      [/\b(?:the\s+)?walt disney studios motion pictures\b/i, 'Disney'],
+      [/\b(?:walt )?disney(?: studios)?(?: motion pictures)?\b/i, 'Disney'],
+      [/\bmetro[‐‑‒–—-]goldwyn[‐‑‒–—-]mayer\b|\bmgm\b/i, 'MGM'],
+      [/\blions\s*gate\b|\blionsgate\b/i, 'Lionsgate'],
+      [/\bwarner bros(?:\.| pictures| entertainment| discovery)*\b/i, 'Warner Bros.'],
+      [/\bsony pictures(?: releasing| entertainment)?\b|\bcolumbia pictures\b/i, 'Sony'],
+      [/\buniversal pictures(?: international)?\b/i, 'Universal'],
+      [/\bparamount pictures\b/i, 'Paramount'],
+      [/\bamazon mgm studios\b/i, 'MGM'],
+    ];
+    return rules.find(([pattern]) => pattern.test(value))?.[1] || value;
+  }
+
+  function normalizeDistributorNames(value) {
+    return [...new Set(String(value || '').split(',').map(shortDistributorName).filter(Boolean))].join(', ');
+  }
+
+  async function fetchWikipediaDistributor(imdb) {
+    try {
+      const searchParams = new URLSearchParams({ action: 'query', list: 'search', srsearch: `insource:"${imdb}"`, format: 'json', origin: '*' });
+      const searchResponse = await fetch('https://en.wikipedia.org/w/api.php?' + searchParams, { signal: AbortSignal.timeout(10000) });
+      if (!searchResponse.ok) return '';
+      const search = await searchResponse.json();
+      const title = search.query?.search?.[0]?.title;
+      if (!title) return '';
+      const parseParams = new URLSearchParams({ action: 'parse', page: title, prop: 'wikitext', format: 'json', origin: '*' });
+      const parseResponse = await fetch('https://en.wikipedia.org/w/api.php?' + parseParams, { signal: AbortSignal.timeout(10000) });
+      if (!parseResponse.ok) return '';
+      const parsed = await parseResponse.json();
+      const wikitext = parsed.parse?.wikitext?.['*'] || '';
+      const match = wikitext.match(/^\s*\|\s*(?:distributor|distributed_by)\s*=\s*([\s\S]*?)(?=^\s*\|\s*[\w ]+\s*=|\n\}\})/im);
+      return normalizeDistributorNames(cleanWikipediaValue(match?.[1]));
+    } catch { return ''; }
+  }
+
+  async function fetchMovieDistributor(imdb) {
+    if (!/^tt\d+$/.test(imdb)) return '';
+    const query = 'SELECT DISTINCT ?distributorLabel ?country WHERE { ?movie wdt:P345 "' + imdb + '"; p:P750 ?statement. ?statement ps:P750 ?distributor; wikibase:rank ?rank. FILTER(?rank != wikibase:DeprecatedRank) OPTIONAL { ?statement pq:P17 ?country. } SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } }';
+    try {
+      const response = await fetch('https://query.wikidata.org/sparql?' + new URLSearchParams({ query, format: 'json' }), { signal: AbortSignal.timeout(10000) });
+      if (response.ok) {
+        const data = await response.json();
+        const rows = data.results?.bindings || [];
+        const us = rows.filter(row => row.country?.value.endsWith('/Q30'));
+        const selected = us.length ? us : rows.filter(row => !row.country);
+        const distributor = [...new Set(selected.map(row => row.distributorLabel?.value).filter(name => name && !/^Q\d+$/.test(name)))].join(', ');
+        if (distributor) return normalizeDistributorNames(distributor);
+      }
+    } catch {}
+    return fetchWikipediaDistributor(imdb);
+  }
+
+  function updateMoviePoster() {
+    const url = el.entryPoster.value.trim();
+    el.moviePosterPreview.hidden = !/^https?:\/\//i.test(url);
+    if (!el.moviePosterPreview.hidden) el.moviePosterPreview.src = url;
+    else el.moviePosterPreview.removeAttribute('src');
+  }
+
+  async function loadMovieEditMetadata() {
+    const imdb = cleanImdb(el.entryImdb.value);
+    if (!/^tt\d+$/.test(imdb)) return showMessage(el.metadataMessage, 'Enter an IMDb ID to load movie details.', 'error');
+    const token = state.searchToken;
+    const fields = [el.entryNetwork, el.entryDirector, el.entryWriter, el.entryCast, el.entryPoster];
+    const before = fields.map(field => field.value);
+    showMessage(el.metadataMessage, 'Loading movie credits, poster, and distributor…');
+    try {
+      const key = localStorage.getItem(MDBLIST_KEY_STORAGE);
+      if (!key) throw new Error('Add your MDBList key in API keys first.');
+      const detail = await fetchMovieDetails({ imdb }, key);
+      const [credits, distributor] = await Promise.all([fetchMovieCredits(detail), fetchMovieDistributor(imdb)]);
+      if (token !== state.searchToken || cleanImdb(el.entryImdb.value) !== imdb || !el.showDialog.open) return;
+      const values = [distributor, (credits.directors || []).join(', '), (credits.writers || []).join(', '), (credits.cast || []).join(', '), movieResultValue(detail, ['poster', 'poster_url', 'image'])];
+      fields.forEach((field, index) => { if (values[index] && field.value === before[index]) field.value = values[index]; });
+      updateMoviePoster();
+      updateEditFieldColors();
+      showMessage(el.metadataMessage, [distributor ? 'Distributor loaded.' : 'No distributor found; you can enter it manually.', credits.directors ? 'Credits loaded.' : credits.creditsStatus, 'Save changes to keep these details.'].filter(Boolean).join(' '));
+    } catch (error) {
+      if (token === state.searchToken) showMessage(el.metadataMessage, error.message || 'Movie details unavailable.', 'error');
+    }
+  }
+
   async function fetchMovieCredits(movie) {
     let key = '';
     try { key = localStorage.getItem(TMDB_KEY_STORAGE) || ''; } catch {}
@@ -1116,7 +1278,8 @@
       if (String(data.id) !== id || !Array.isArray(data.crew) || !Array.isArray(data.cast)) return { creditsStatus: 'Credits unavailable' };
       return {
         directors: data.crew.filter(person => person.job === 'Director').map(person => person.name).filter(Boolean),
-        cast: data.cast.map(person => person.name).filter(Boolean),
+        writers: [...new Set(data.crew.filter(person => ['Writer', 'Screenplay', 'Story', 'Adaptation', 'Teleplay'].includes(person.job)).map(person => person.name).filter(Boolean))],
+        cast: data.cast.map(person => person.name).filter(Boolean).slice(0, 5),
         creditsStatus: 'Not listed on TMDb'
       };
     } catch { return { creditsStatus: 'Credits unavailable' }; }
@@ -1163,6 +1326,8 @@
       try { key = localStorage.getItem(MDBLIST_KEY_STORAGE); } catch {}
       if (!key) throw new Error('Save your MDBList key to load movie metadata.');
       fullMovie = loadedDetails || await fetchMovieDetails(movie, key);
+      if (!loadedDetails) Object.assign(fullMovie, await fetchMovieCredits(fullMovie));
+      fullMovie.distributor = await fetchMovieDistributor(movieIds(fullMovie).imdb);
     } catch (error) {
       detailError = error.name === 'TimeoutError' ? 'MDBList timed out. You can complete the fields manually.' : error.message;
     }
@@ -1175,6 +1340,10 @@
     Object.assign(entry, {
       mediaType: 'movie', season: null, tvmazeId: null, tvmazeSeasonId: null, tvmazeUrl: '', tvdb: '',
       title,
+      network: fullMovie.distributor || existing?.network || '',
+      director: moviePeople(fullMovie, ['directors', 'director']).join(', '),
+      writer: moviePeople(fullMovie, ['writers', 'writer']).join(', '),
+      cast: moviePeople(fullMovie, ['cast', 'actors']).join(', '),
       genres: movieGenres(fullMovie),
       runtime: nullableNumber(movieResultValue(fullMovie, ['runtime'])),
       startDate: movieReleaseDate(fullMovie),
@@ -1297,6 +1466,11 @@
     el.entryWatchedDate.value = entry.watchedDate || '';
     el.entryImdb.value = entry.imdb || '';
     el.entryTvdb.value = entry.tvdb || '';
+    el.entryDirector.value = entry.director || '';
+    el.entryWriter.value = entry.writer || '';
+    el.entryCast.value = entry.cast || '';
+    el.entryPoster.value = entry.image || '';
+    updateMoviePoster();
     el.entrySynopsis.value = entry.synopsis || '';
     el.entryComments.value = entry.comments || '';
     updateEditFieldColors();
@@ -1314,6 +1488,8 @@
   function setFormType(mediaType) {
     const isMovie = mediaType === 'movie';
     el.entryMediaType.value = mediaType;
+    el.movieMetadataFields.hidden = !isMovie;
+    el.networkLabel.textContent = isMovie ? 'Network / distributor' : 'Network';
     el.seasonField.hidden = isMovie;
     el.episodeCountField.hidden = isMovie;
     el.episodesWatchedField.hidden = isMovie;
@@ -1371,7 +1547,10 @@
       episodeCount, episodesWatched, runtime: nullableNumber(el.entryRuntime.value), startDate: el.entryStartDate.value,
       watchedDate: el.entryWatchedDate.value, imdb: cleanImdb(el.entryImdb.value), tvdb: mediaType === 'tv' ? el.entryTvdb.value.trim() : '',
       synopsis: el.entrySynopsis.value.trim(), comments: el.entryComments.value.trim(), tvmazeUrl: mediaType === 'tv' ? (state.selectedShow?.url ?? existing?.tvmazeUrl ?? '') : '',
-      image: mediaType === 'tv' ? (state.selectedShow?.image?.medium ?? existing?.image ?? '') : (state.selectedMovie?.image ?? existing?.image ?? ''),
+      image: mediaType === 'tv' ? (state.selectedShow?.image?.medium ?? existing?.image ?? '') : el.entryPoster.value.trim(),
+      director: mediaType === 'movie' ? el.entryDirector.value.trim() : '',
+      writer: mediaType === 'movie' ? el.entryWriter.value.trim() : '',
+      cast: mediaType === 'movie' ? el.entryCast.value.trim() : '',
       createdAt: existing?.createdAt || now, updatedAt: now,
     });
 

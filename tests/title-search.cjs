@@ -19,7 +19,7 @@ const ctx = vm.createContext({
   el: elements(), showMessage: (el, text) => { el.textContent = text; }, hideMessage: () => {},
   escapeHTML: String, escapeAttr: String, getNetwork: () => '',
 });
-for (const name of ['parseTitleSearch', 'movieResultValue', 'movieSearchResults', 'movieGenres', 'movieReleaseDate', 'moviePeople', 'movieIds', 'fetchMovieCredits', 'movieSearchContent', 'searchShows', 'searchMovies']) vm.runInContext(extract(name), ctx);
+for (const name of ['parseTitleSearch', 'titleSearchWords', 'closeSearchWord', 'fuzzyTitleScore', 'fuzzyFallbackTerms', 'movieResultValue', 'movieSearchResults', 'movieGenres', 'movieReleaseDate', 'moviePeople', 'movieIds', 'cleanWikipediaValue', 'shortDistributorName', 'normalizeDistributorNames', 'fetchWikipediaDistributor', 'fetchMovieDistributor', 'fetchMovieCredits', 'movieSearchContent', 'searchShows', 'searchMovies']) vm.runInContext(extract(name), ctx);
 for (const [input, title, year] of [
   ['Animals 2026', 'Animals', '2026'], [' Animals (2026) ', 'Animals', '2026'],
   ['1917', '1917', ''], ['2001: A Space Odyssey', '2001: A Space Odyssey', ''],
@@ -29,6 +29,14 @@ for (const [input, title, year] of [
   assert.equal(parsed.query, title); assert.equal(parsed.year, year);
 }
 (async () => {
+  assert.equal(ctx.shortDistributorName('Walt Disney Studios Motion Pictures'), 'Disney');
+  assert.equal(ctx.shortDistributorName('Metro-Goldwyn-Mayer'), 'MGM');
+  assert.equal(ctx.shortDistributorName('Lionsgate Films International'), 'Lionsgate');
+  assert.equal(ctx.shortDistributorName('Small Town Releasing'), 'Small Town Releasing');
+  assert.equal(ctx.normalizeDistributorNames('Walt Disney Studios Motion Pictures, Lionsgate UK, Lionsgate'), 'Disney, Lionsgate');
+  assert.ok(ctx.fuzzyTitleScore('Avatar: Fire and Ash', 'avatar fire ash') > 1);
+  assert.ok(ctx.fuzzyTitleScore('Avatar: Fire and Ash', 'avatr fire ash') >= .9);
+  assert.ok(ctx.fuzzyTitleScore('Avatar', 'avatar fire ash') < .45);
   let requested;
   const movies = [...Array.from({ length: 9 }, (_, i) => ({ title: 'Animals ' + i, year: 2014 })), { title: 'Animals', year: 2026 }, { title: 'Adjacent', year: 2025 }];
   ctx.fetch = async url => { requested = new URL(url); return { ok: true, json: async () => ({ search: movies }) }; };
@@ -43,6 +51,18 @@ for (const [input, title, year] of [
   await ctx.searchMovies();
   assert.equal(requested.searchParams.has('year'), false);
   assert.equal((ctx.el.searchResults.innerHTML.match(/data-index=/g) || []).length, 11);
+  const fuzzyRequests = [];
+  ctx.fetch = async url => {
+    const request = new URL(url);
+    fuzzyRequests.push(request.searchParams.get('query'));
+    const search = request.searchParams.get('query') === 'avatar' ? [{ title: 'Avatar', year: 2009 }, { title: 'Avatar: Fire and Ash', year: 2025 }] : [];
+    return { ok: true, json: async () => ({ search }) };
+  };
+  ctx.el.showSearchInput.value = 'avatar fire ash';
+  await ctx.searchMovies();
+  assert.deepEqual(fuzzyRequests, ['avatar fire ash', 'avatar']);
+  assert.match(ctx.el.searchResults.innerHTML, /Avatar: Fire and Ash/);
+  assert.doesNotMatch(ctx.el.searchResults.innerHTML, />Avatar<\/span>/);
   ctx.fetch = async url => { requested = new URL(url); return { ok: true, json: async () => movies.map(movie => ({ show: { name: movie.title, premiered: movie.year + '-01-01' } })) }; };
   ctx.el.showSearchInput.value = 'Animals 2026';
   await ctx.searchShows();
@@ -69,13 +89,33 @@ for (const [input, title, year] of [
     const request = new URL(url);
     assert.equal(request.hostname, 'api.themoviedb.org');
     assert.equal(request.pathname, '/3/movie/1236045/credits');
-    return { ok: true, json: async () => ({ id: 1236045, crew: [{ job: 'Director', name: 'Ben Affleck' }, { job: 'Writer', name: 'Other Person' }], cast: [{ name: 'Ben Affleck' }, { name: 'Kerry Washington' }, { name: 'Steven Yeun' }] }) };
+    return { ok: true, json: async () => ({ id: 1236045, crew: [{ job: 'Director', name: 'Ben Affleck' }, { job: 'Writer', name: 'Other Person' }], cast: [{ name: 'Ben Affleck' }, { name: 'Kerry Washington' }, { name: 'Steven Yeun' }, { name: 'Gillian Anderson' }, { name: 'Adriana Paz' }, { name: 'Sixth Actor' }] }) };
   };
   const tmdbCredits = await ctx.fetchMovieCredits({ ids: { tmdb: 1236045 } });
   const enriched = ctx.movieSearchContent({ ...apiMovie, ...tmdbCredits });
   assert.match(enriched, /Directed by Ben Affleck/);
   assert.match(enriched, /Starring Ben Affleck, Kerry Washington, Steven Yeun/);
+  assert.equal(tmdbCredits.cast.length, 5);
+  assert.doesNotMatch(enriched, /Sixth Actor/);
   assert.doesNotMatch(enriched, /Other Person/);
+  assert.equal(tmdbCredits.writers.join(', '), 'Other Person');
+  ctx.fetch = async () => ({ ok: true, json: async () => ({ results: { bindings: [{ distributorLabel: { value: 'US Distributor' }, country: { value: 'http://www.wikidata.org/entity/Q30' } }, { distributorLabel: { value: 'Other Distributor' } }] } }) });
+  assert.equal(await ctx.fetchMovieDistributor('tt31049299'), 'US Distributor');
+  assert.equal(await ctx.fetchMovieDistributor('invalid'), '');
+  let wikipediaRequest = 0;
+  ctx.fetch = async url => {
+    const request = new URL(url);
+    if (request.hostname === 'query.wikidata.org') return { ok: true, json: async () => ({ results: { bindings: [] } }) };
+    wikipediaRequest++;
+    if (request.searchParams.get('list') === 'search') {
+      assert.equal(request.searchParams.get('srsearch'), 'insource:"tt31049299"');
+      return { ok: true, json: async () => ({ query: { search: [{ title: 'Animals (2026 film)' }] } }) };
+    }
+    assert.equal(request.searchParams.get('page'), 'Animals (2026 film)');
+    return { ok: true, json: async () => ({ parse: { wikitext: { '*': '{{Infobox film\n| director = [[Ben Affleck]]\n| distributor = [[Netflix]]<!-- Official -->\n| released = 2026\n}}' } } }) };
+  };
+  assert.equal(await ctx.fetchMovieDistributor('tt31049299'), 'Netflix');
+  assert.equal(wikipediaRequest, 2);
   ctx.fetch = async () => ({ ok: false, status: 401 });
   assert.match((await ctx.fetchMovieCredits({ ids: { tmdb: 1236045 } })).creditsStatus, /Check TMDb key/);
   ctx.fetch = async () => { throw new Error('Network failed'); };
