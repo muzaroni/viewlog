@@ -27,7 +27,7 @@
   };
 
   const el = Object.fromEntries([
-    'mdblistSettingsBtn','mdblistDialog','mdblistForm','mdblistKey','mdblistCancel','mdblistSettingsMessage','yearTabs','yearSubtabs','libraryTab','dashboardTab','librarySection','editActions','publicModeBtn','modeBanner','publishedStatus','analyticsSection','analyticsTitle','analyticsSubtitle',
+    'mdblistSettingsBtn','mdblistDialog','mdblistForm','tmdbKey','mdblistKey','mdblistCancel','mdblistSettingsMessage','yearTabs','yearSubtabs','libraryTab','dashboardTab','librarySection','editActions','publicModeBtn','modeBanner','publishedStatus','analyticsSection','analyticsTitle','analyticsSubtitle',
     'statTitles','statTitlesDetail','statHours','statHoursDetail','statRating','statRatingDetail','statGenres','statGenreDetail','statNetwork','statNetworkDetail',
     'ratingDistribution','networkRatings','genreRatings','genreBars','networkBars','statusBars','premiereByMonth','premiereChartLabel','addShowBtn','emptyAddBtn','publishExportBtn','importFile','resetWorkingBtn',
     'searchFilter','typeFilter','statusFilter','networkFilter','genreFilter','visibleCount','showsBody','emptyState','emptyTitle','emptyText',
@@ -40,6 +40,7 @@
 
   const ratingsPending = new Set();
   const MDBLIST_KEY_STORAGE = 'viewlog.mdblist.key';
+  const TMDB_KEY_STORAGE = 'viewlog.tmdb.key';
   const synopsisCache = new Map();
   init();
 
@@ -58,11 +59,12 @@
   function bindEvents() {
     el.mdblistSettingsBtn.addEventListener('click', () => {
       try { el.mdblistKey.value = localStorage.getItem(MDBLIST_KEY_STORAGE) || ''; } catch { el.mdblistKey.value = ''; }
+      try { el.tmdbKey.value = localStorage.getItem(TMDB_KEY_STORAGE) || ''; } catch { el.tmdbKey.value = ''; }
       el.mdblistSettingsMessage.textContent = '';
       el.mdblistDialog.showModal();
     });
     el.mdblistCancel.addEventListener('click', () => el.mdblistDialog.close());
-    el.mdblistDialog.addEventListener('close', () => { el.mdblistKey.value = ''; });
+    el.mdblistDialog.addEventListener('close', () => { el.mdblistKey.value = ''; el.tmdbKey.value = ''; });
     el.mdblistForm.addEventListener('submit', event => {
       event.preventDefault();
       if (state.mode !== 'edit') return;
@@ -70,8 +72,11 @@
         const key = el.mdblistKey.value.trim();
         if (key) localStorage.setItem(MDBLIST_KEY_STORAGE, key);
         else localStorage.removeItem(MDBLIST_KEY_STORAGE);
+        const tmdbKey = el.tmdbKey.value.trim();
+        if (tmdbKey) localStorage.setItem(TMDB_KEY_STORAGE, tmdbKey);
+        else localStorage.removeItem(TMDB_KEY_STORAGE);
         el.mdblistDialog.close();
-        showToast(key ? 'MDBList key saved in this browser.' : 'MDBList key removed.');
+        showToast('API key settings saved in this browser.');
       } catch { el.mdblistSettingsMessage.textContent = 'Browser storage is unavailable. The key could not be saved.'; }
     });
     el.libraryTab.addEventListener('click', () => setYearView('library'));
@@ -1012,6 +1017,22 @@
     return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : '';
   }
 
+  function moviePeople(movie, keys) {
+    const value = movieResultValue(movie, keys) || movieResultValue(movie?.extra, keys);
+    const people = Array.isArray(value) ? value : typeof value === 'string' ? value.split(',') : value ? [value] : [];
+    return [...new Set(people.map(person => typeof person === 'string' ? person.trim() : person?.name || person?.person?.name || '').filter(Boolean))];
+  }
+
+  function movieSearchContent(movie, fallback = movie.creditsStatus || 'Unavailable from MDBList') {
+    const title = movieResultValue(movie, ['title', 'name']);
+    const year = movieResultValue(movie, ['year', 'release_year']) || movieReleaseDate(movie).slice(0, 4);
+    const poster = movieResultValue(movie, ['poster', 'poster_url', 'image']);
+    const image = typeof poster === 'string' ? poster : poster?.medium || poster?.url || '';
+    const directors = moviePeople(movie, ['director', 'directors']).join(', ') || fallback;
+    const cast = moviePeople(movie, ['cast', 'actors', 'stars']).slice(0, 3).join(', ') || fallback;
+    return `${image ? `<img class="search-poster" src="${escapeAttr(image)}" alt="" loading="lazy">` : '<span class="search-poster search-poster-placeholder">▦</span>'}<span class="movie-search-title"><span class="search-result-title" title="${escapeAttr(title)}">${escapeHTML(title)}</span><span class="search-result-meta">${escapeHTML(year)}</span></span><span class="movie-search-credits"><span title="${escapeAttr('Directed by ' + directors)}">Directed by ${escapeHTML(directors)}</span><span title="${escapeAttr('Starring ' + cast)}">Starring ${escapeHTML(cast)}</span></span><span class="search-result-arrow">›</span>`;
+  }
+
   async function searchMovies() {
     const { query, year } = parseTitleSearch(el.showSearchInput.value);
     if (!query) return showMessage(el.searchMessage, 'Type a movie title first.', 'error');
@@ -1036,15 +1057,34 @@
       if (!results.length) return showMessage(el.searchMessage, 'No movies found. Try another spelling or enter it manually.', 'error');
       hideMessage(el.searchMessage);
       const visible = results;
-      el.searchResults.innerHTML = visible.map((movie, index) => {
-        const title = movieResultValue(movie, ['title', 'name']);
-        const released = movieReleaseDate(movie).slice(0, 4) || movieResultValue(movie, ['year']);
-        const genres = movieGenres(movie).slice(0, 3).join(', ');
-        const image = movieResultValue(movie, ['poster', 'poster_url', 'image']);
-        const meta = [released, genres].filter(Boolean).join(' · ');
-        return `<button class="search-result" type="button" data-index="${index}">${image ? `<img class="search-poster" src="${escapeAttr(image)}" alt="">` : '<span class="search-poster search-poster-placeholder">▦</span>'}<span><span class="search-result-title">${escapeHTML(title)}</span><span class="search-result-meta">${escapeHTML(meta)}</span></span><span class="search-result-arrow">›</span></button>`;
-      }).join('');
-      el.searchResults.querySelectorAll('.search-result').forEach(button => button.addEventListener('click', () => selectMovieSearchResult(visible[Number(button.dataset.index)])));
+      el.searchResults.innerHTML = visible.map((movie, index) =>
+        '<button class="search-result movie-search-result" type="button" data-index="' + index + '">' + movieSearchContent(movie, 'Loading…') + '</button>'
+      ).join('');
+      const buttons = [...el.searchResults.querySelectorAll('.search-result')];
+      const details = new Map();
+      buttons.forEach((button, index) => button.addEventListener('click', () => selectMovieSearchResult(visible[index], details.get(index))));
+      // Keep results clickable while filling in details, with at most three requests in flight.
+      let next = 0;
+      async function enrich() {
+        while (next < buttons.length && token === state.searchToken) {
+          const index = next++;
+          try {
+            const detail = await fetchMovieDetails(visible[index], key);
+            if (token !== state.searchToken) return;
+            Object.assign(detail, await fetchMovieCredits(detail));
+            if (token !== state.searchToken) return;
+            details.set(index, detail);
+            buttons[index].innerHTML = movieSearchContent({ ...visible[index], ...detail });
+          } catch {
+            if (token !== state.searchToken) return;
+            buttons[index].innerHTML = movieSearchContent(visible[index], 'Unavailable');
+          }
+          buttons[index].querySelector('img')?.addEventListener('error', event => {
+            event.target.replaceWith(Object.assign(document.createElement('span'), { className: 'search-poster search-poster-placeholder', textContent: '▦' }));
+          });
+        }
+      }
+      void Promise.all(Array.from({ length: Math.min(3, buttons.length) }, enrich));
     } catch (error) {
       console.error(error);
       showMessage(el.searchMessage, error.name === 'TimeoutError' ? 'MDBList timed out. Enter the movie manually or try again.' : error.message || 'Could not reach MDBList. Enter the movie manually.', 'error');
@@ -1060,6 +1100,26 @@
       tmdb: String(ids.tmdb || ids.tmdbid || movie?.tmdb || movie?.tmdb_id || movie?.tmdbid || '').trim(),
       mdblist: String(ids.mdblist || movie?.mdblist_id || movie?.mdblist || (/^m\d+$/.test(String(movie?.id)) ? movie.id : '')).trim()
     };
+  }
+
+  async function fetchMovieCredits(movie) {
+    let key = '';
+    try { key = localStorage.getItem(TMDB_KEY_STORAGE) || ''; } catch {}
+    if (!key) return { creditsStatus: 'Add TMDb key in API keys' };
+    const id = movieIds(movie).tmdb;
+    if (!/^\d+$/.test(id)) return { creditsStatus: 'TMDb ID unavailable' };
+    try {
+      const params = new URLSearchParams({ api_key: key });
+      const response = await fetch('https://api.themoviedb.org/3/movie/' + id + '/credits?' + params, { signal: AbortSignal.timeout(15000) });
+      if (!response.ok) return { creditsStatus: response.status === 401 ? 'Check TMDb key in API keys' : 'Credits unavailable' };
+      const data = await response.json();
+      if (String(data.id) !== id || !Array.isArray(data.crew) || !Array.isArray(data.cast)) return { creditsStatus: 'Credits unavailable' };
+      return {
+        directors: data.crew.filter(person => person.job === 'Director').map(person => person.name).filter(Boolean),
+        cast: data.cast.map(person => person.name).filter(Boolean),
+        creditsStatus: 'Not listed on TMDb'
+      };
+    } catch { return { creditsStatus: 'Credits unavailable' }; }
   }
 
   async function fetchMovieDetails(movie, key) {
@@ -1083,7 +1143,7 @@
     return detail;
   }
 
-  async function selectMovieSearchResult(movie) {
+  async function selectMovieSearchResult(movie, loadedDetails) {
     const token = ++state.searchToken;
     state.selectedMovie = null;
     state.selectedShow = null;
@@ -1102,7 +1162,7 @@
       let key;
       try { key = localStorage.getItem(MDBLIST_KEY_STORAGE); } catch {}
       if (!key) throw new Error('Save your MDBList key to load movie metadata.');
-      fullMovie = await fetchMovieDetails(movie, key);
+      fullMovie = loadedDetails || await fetchMovieDetails(movie, key);
     } catch (error) {
       detailError = error.name === 'TimeoutError' ? 'MDBList timed out. You can complete the fields manually.' : error.message;
     }
