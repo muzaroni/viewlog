@@ -1,7 +1,7 @@
 {
   "app": "Viewlog",
   "version": 3,
-  "publishedAt": "2026-09-09T16:55:58.733Z",
+  "publishedAt": "2026-09-19T03:46:00.210Z",
   "entries": [
     {
       "id": "6e29a09f-0d2e-4912-b191-6ca1deb12839",
@@ -4078,7 +4078,7 @@
       "season": 6,
       "year": 2026,
       "rating": null,
-      "status": "Upcoming",
+      "status": "Airing",
       "network": "Apple TV",
       "genres": [
         "Drama",
@@ -4122,7 +4122,7 @@
       "season": 1,
       "year": 2026,
       "rating": null,
-      "status": "Upcoming",
+      "status": "Airing",
       "network": "Prime Video",
       "genres": [
         "Drama",
@@ -13942,7 +13942,7 @@
       "season": 1,
       "year": 2026,
       "rating": null,
-      "status": "Upcoming",
+      "status": "Airing",
       "network": "Paramount+",
       "genres": [
         "Action",
@@ -13986,7 +13986,7 @@
       "season": 1,
       "year": 2026,
       "rating": null,
-      "status": "Upcoming",
+      "status": "Airing",
       "network": "NBC",
       "genres": [],
       "episodeCount": 12,
@@ -15176,6 +15176,48 @@
       "image": "https://static.tvmaze.com/uploads/images/medium_portrait/639/1599358.jpg",
       "createdAt": "2026-09-09T15:34:02.433Z",
       "updatedAt": "2026-09-09T15:34:02.433Z"
+    },
+    {
+      "id": "d8bfe464-b8ce-431b-b925-2dd2fe72cfdb",
+      "mediaType": "tv",
+      "tvmazeId": 2950,
+      "tvmazeSeasonId": 204237,
+      "seriesStatus": "returning",
+      "title": "The Great British Bake Off",
+      "season": 17,
+      "year": 2026,
+      "rating": null,
+      "status": "Upcoming",
+      "network": "Channel 4",
+      "genres": [
+        "Food"
+      ],
+      "episodeCount": 2,
+      "episodesWatched": null,
+      "runtime": 90,
+      "startDate": "2026-09-22",
+      "watchedDate": "",
+      "imdb": "tt1877368",
+      "tvdb": "184871",
+      "externalRatings": {
+        "imdb": null,
+        "rt": null,
+        "mc": null,
+        "mal": null
+      },
+      "ratingsUpdatedAt": "",
+      "ratingsImdbId": "",
+      "ratingsUrls": {
+        "rt": "",
+        "mc": "",
+        "mal": ""
+      },
+      "synopsis": "Over 10 weeks, 12 of the best amateur bakers in Britain will whisk, knead, ice, beat and bake their way through classic British cakes, perfect patisserie, Italian delights, sticky caramel constructions and elaborate layered puddings. All 12 will be hoping to impress with their skill, creativity, knowledge and passion to clinch the Bake Off Crown. Each of the 30 new challenges have been carefully designed by judges Paul Hollywood and Prue Leith to reveal just who is a star baker.",
+      "comments": "",
+      "tvmazeUrl": "https://www.tvmaze.com/shows/2950/the-great-british-bake-off",
+      "image": "https://static.tvmaze.com/uploads/images/medium_portrait/585/1464906.jpg",
+      "createdAt": "2026-09-19T03:22:56.566Z",
+      "updatedAt": "2026-09-19T03:22:56.566Z"
     }
   ]
 }

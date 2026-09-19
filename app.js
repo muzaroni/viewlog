@@ -820,9 +820,9 @@
     state.searchMediaType = 'tv';
     if (state.fixMatchMode) el.dialogTitle.textContent = 'Find the correct TV show';
     el.searchLabel.textContent = 'TV show name';
-    el.searchHelper.textContent = state.fixMatchMode ? 'Choose the correct TVmaze show. The entry will be converted to TV when saved.' : 'TV search uses TVmaze. You can still enter a TV season manually if needed.';
+    el.searchHelper.textContent = state.fixMatchMode ? 'Choose the correct TVmaze show. The entry will be converted to TV when saved.' : 'TV search uses TVmaze. Add a premiere year to narrow results, e.g. The Bear 2022. You can still enter a TV season manually.';
     el.manualEntryBtn.textContent = 'Enter this TV season manually';
-    el.showSearchInput.placeholder = 'e.g. The Bear';
+    el.showSearchInput.placeholder = 'e.g. The Bear or The Bear 2022';
     el.tvSearchArea.hidden = false;
     setTimeout(() => el.showSearchInput.focus(), 30);
   }
@@ -835,9 +835,9 @@
     state.searchMediaType = 'movie';
     if (state.fixMatchMode) el.dialogTitle.textContent = 'Find the correct movie';
     el.searchLabel.textContent = 'Movie title';
-    el.searchHelper.textContent = state.fixMatchMode ? 'Choose the correct MDBList movie. The entry will be converted to a movie when saved.' : 'Movie search uses MDBList and your saved API key. You can still enter a movie manually.';
+    el.searchHelper.textContent = state.fixMatchMode ? 'Choose the correct MDBList movie. The entry will be converted to a movie when saved.' : 'Movie search uses MDBList and your saved API key. Add a release year, e.g. Animals 2026. You can still enter a movie manually.';
     el.manualEntryBtn.textContent = 'Enter this movie manually';
-    el.showSearchInput.placeholder = 'e.g. The Matrix';
+    el.showSearchInput.placeholder = 'e.g. Animals or Animals 2026';
     el.tvSearchArea.hidden = false;
     setTimeout(() => el.showSearchInput.focus(), 30);
   }
@@ -873,11 +873,11 @@
     if (entry.mediaType === 'movie') {
       el.searchLabel.textContent = 'Movie title';
       el.searchHelper.textContent = 'Choose the correct MDBList movie to replace its source metadata and ratings.';
-      el.showSearchInput.placeholder = 'e.g. The Matrix';
+      el.showSearchInput.placeholder = 'e.g. Animals or Animals 2026';
     } else {
       el.searchLabel.textContent = 'TV show name';
       el.searchHelper.textContent = `Choose the correct TVmaze show. Season ${entry.season} will be selected when available.`;
-      el.showSearchInput.placeholder = 'e.g. The Bear';
+      el.showSearchInput.placeholder = 'e.g. The Bear or The Bear 2022';
     }
     el.showDialog.showModal();
     if (entry.mediaType === 'movie') {
@@ -929,9 +929,16 @@
     };
   }
 
+  function parseTitleSearch(value) {
+    const query = value.trim();
+    // A year alone is a title (e.g. 1917), not a release-year filter.
+    const match = query.match(/^(.+?)\s+(?:\(((?:18|19|20|21)\d{2})\)|((?:18|19|20|21)\d{2}))$/);
+    return match ? { query: match[1].trim(), year: match[2] || match[3] } : { query, year: '' };
+  }
+
   async function searchShows() {
     if (state.searchMediaType === 'movie') return searchMovies();
-    const query = el.showSearchInput.value.trim();
+    const { query, year } = parseTitleSearch(el.showSearchInput.value);
     if (!query) return showMessage(el.searchMessage, 'Type a show name first.', 'error');
     const token = ++state.searchToken;
     el.showSearchBtn.disabled = true;
@@ -941,11 +948,12 @@
     try {
       const response = await fetch(`${TVMAZE_BASE}/search/shows?q=${encodeURIComponent(query)}`);
       if (!response.ok) throw new Error(`Search failed (${response.status})`);
-      const results = await response.json();
+      const data = await response.json();
+      const results = Array.isArray(data) ? data.filter(({ show }) => !year || show.premiered?.slice(0, 4) === year) : [];
       if (token !== state.searchToken) return;
       if (!Array.isArray(results) || !results.length) return showMessage(el.searchMessage, 'No matches found. Try another spelling or enter it manually.', 'error');
       hideMessage(el.searchMessage);
-      const visible = results.slice(0, 8);
+      const visible = results;
       el.searchResults.innerHTML = visible.map(({ show }, index) => {
         const meta = [show.premiered?.slice(0,4), getNetwork(show), (show.genres || []).slice(0,3).join(', ')].filter(Boolean).join(' · ');
         const image = show.image?.medium;
@@ -1005,7 +1013,7 @@
   }
 
   async function searchMovies() {
-    const query = el.showSearchInput.value.trim();
+    const { query, year } = parseTitleSearch(el.showSearchInput.value);
     if (!query) return showMessage(el.searchMessage, 'Type a movie title first.', 'error');
     let key;
     try { key = localStorage.getItem(MDBLIST_KEY_STORAGE); } catch {}
@@ -1016,16 +1024,18 @@
     el.searchResults.innerHTML = '';
     showMessage(el.searchMessage, 'Searching MDBList…');
     try {
-      const params = new URLSearchParams({ query, apikey: key });
+      const params = new URLSearchParams({ query, apikey: key, limit: '50' });
+      if (year) params.set('year', year);
       const response = await fetch('https://api.mdblist.com/search/movie?' + params, { signal: AbortSignal.timeout(15000) });
       if (!response.ok) throw new Error(response.status === 429 ? 'MDBList request limit reached. Try again later.' : [401, 403].includes(response.status) ? 'MDBList key was rejected. Check MDBList key settings.' : `Search failed (${response.status})`);
       const data = await response.json();
       if (data?.error) throw new Error(typeof data.error === 'string' ? `MDBList: ${data.error}` : 'MDBList could not search for movies.');
-      const results = movieSearchResults(data);
+      // MDBList's year hint includes adjacent years; keep the requested year.
+      const results = movieSearchResults(data).filter(movie => !year || String(movieResultValue(movie, ['year', 'release_year']) || movieReleaseDate(movie).slice(0, 4)) === year);
       if (token !== state.searchToken) return;
       if (!results.length) return showMessage(el.searchMessage, 'No movies found. Try another spelling or enter it manually.', 'error');
       hideMessage(el.searchMessage);
-      const visible = results.slice(0, 8);
+      const visible = results;
       el.searchResults.innerHTML = visible.map((movie, index) => {
         const title = movieResultValue(movie, ['title', 'name']);
         const released = movieReleaseDate(movie).slice(0, 4) || movieResultValue(movie, ['year']);
